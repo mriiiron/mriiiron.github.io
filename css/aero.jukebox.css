@@ -1,0 +1,165 @@
+body {
+    background-image: url("/assets/image/wall.jpg");
+}
+
+.header {
+    top: 0px;
+    opacity: 1.0;
+}
+
+.panel {
+    text-align: center;
+    display: block;
+}
+
+#music-player {
+    font-family: "Palatino", "Palatino Linotype", "Palatino LT STD", "Book Antiqua", "Georgia", "Microsoft Yahei", "微软雅黑", serif;
+    position: absolute;
+    width: 600px;
+    height: 100px;
+    left: 50%;
+    margin-left: -300px;
+    top: 20px;
+    z-index: 1000;
+    -webkit-transition: top .15s ease-in-out;
+    -moz-transition: top .15s ease-in-out;
+    -ms-transition: top .15s ease-in-out;
+    -o-transition: top .15s ease-in-out;
+    transition: top .15s ease-in-out;
+}
+
+#music-player.hiding {
+    top: -70px;
+}
+
+#music-player.hiding #player-hide {
+    -webkit-transform: rotate(180deg);
+    -moz-transform: rotate(180deg);
+    -ms-transform: rotate(180deg);
+    -o-transform: rotate(180deg);
+    transform: rotate(180deg);
+}
+
+#music-display {
+    color: white;
+    margin: 5px 0 0 0;
+    text-align: center;
+}
+
+#music-playlist {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 300px;
+    height: 700px;
+    opacity: 1.0;
+    text-align: left;
+    color: white;
+    overflow: hidden;
+}
+
+#music-playlist .title {
+    text-decoration: none;
+	cursor: pointer;
+}
+
+#music-playlist .artist {
+	font-size: 80%;
+	font-style: italic;
+	color: silver;
+}
+
+#music-playlist a:link, #music-playlist a:visited {
+    color: white;
+}
+
+#music-playlist a:hover, #music-playlist a:active {
+    color: #66ccff;
+}
+
+#music-lyric-show {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 650px;
+    height: 700px;
+    opacity: 1.0;
+    color: white;
+}
+
+#functions {
+    margin-top: 10px;
+}
+
+#lyric-toolbar {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    text-align: right;
+}
+
+.tool {
+    display: inline-block;
+    color: white;
+    position: relative;
+    width: 24px;
+    height: 24px;
+    cursor: pointer;
+}
+
+.tool.disabled:hover {
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+.tool.disabled:active {
+    top: 0;
+}
+
+.tool:hover {
+    opacity: 1.0;
+}
+
+.tool:active {
+    top: 2px;
+}
+
+#lyric-wrapper {
+    position: relative;
+    width: 100%;
+    height: 90%;
+    top: 5%;
+    overflow: hidden;
+}
+
+#lyric-panel {
+    width: 80%;
+    margin: auto;
+}
+
+#lyric-panel.mode-scroll {
+    color: silver;
+    position: relative;
+    left: 0;
+}
+
+#lyric-panel.mode-scroll p.active {
+    color: white;
+}
+
+#lyric-panel.mode-pv {
+    color: white;
+    position: absolute;
+    top: 50%;
+    left: 10%;
+    -webkit-transform: translateY(-50%);
+    -moz-transform: translateY(-50%);
+    -ms-transform: translateY(-50%);
+    -o-transform: translateY(-50%);
+    transform: translateY(-50%);
+}
+
+#lyric-panel p {
+    position: relative;
+    height: 21px;
+}

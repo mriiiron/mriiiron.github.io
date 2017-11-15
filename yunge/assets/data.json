@@ -1,0 +1,16 @@
+{
+    "savedMessages": {
+        "intro": [
+            {"message": "===============================================<br />yunge v0.89<br />Copyright (C) 2017, Project YUNGE, Anyware Inc.<br />==============================================="},
+            {"message": "Processor Testing ... OK<br />Memory Testing ... OK"},
+            {"message": "Welcome to yunge."},
+            {"message": "Enter HELP for a list of available commands (I'm case iNSenItiVE)."}
+        ],
+        "help": [
+            {"message": "All commands are case insensitive."},
+            {"message": "ABOUT / INTRO<br />Provide basic information about yunge."},
+            {"message": "CLS / CLEAR<br />Clear the console."},
+            {"message": "HELP<br />Provide help information for yunge Commands."}
+        ]
+    }
+}

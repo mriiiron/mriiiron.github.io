@@ -1,0 +1,50 @@
+body {
+    background-color: black;
+    color: white;
+    font-family: 'Ubuntu Mono', monospace;
+}
+
+span#title {
+    position: absolute;
+    left: 50px;
+    top: 40px;
+}
+
+#console {
+    border-top: 1px solid white;
+    position: absolute;
+    left: 50px;
+    right: 50px;
+    top: 60px;
+    bottom: 60px;
+    overflow: auto;
+}
+
+p {
+    
+}
+
+p.user-inputting {
+    display: flex;
+    flex-direction: row;
+}
+
+input[type=text] {
+    background-color: blue;
+    border: none;
+    padding: 0;
+    color: white;
+    font-family: 'Ubuntu Mono', monospace;
+    font-size: 1em;
+    flex: 1;
+}
+
+input:focus {
+    outline: none;
+}
+
+button#debug-test {
+    position: fixed;
+    right: 10px;
+    bottom: 10px;
+}

@@ -1,0 +1,97 @@
+<!doctype html>
+
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+
+    <title>yunge</title>
+    <meta name="description" content="Yunge v1.0" />
+    <meta name="author" content="C." />
+
+    <link rel="stylesheet" href="css/styles.css" />
+    <link href="https://fonts.googleapis.com/css?family=Ubuntu+Mono" rel="stylesheet">
+    <link rel='stylesheet' href='css/perfect-scrollbar.min.css' />
+    
+    <!--[if lt IE 9]>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv.js"></script>
+    <![endif]-->
+</head>
+
+<body>
+
+    <span id="title">~ yunge v0.89 ~</span>
+    <div id="console"></div>
+    
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    <script src='js/perfect-scrollbar.min.js'></script>
+    
+    <script>
+    
+    var data = null;
+    var lastInput = "";
+    
+    function ShowSavedMessage(messageGroupName) {
+        $.each(data['savedMessages'][messageGroupName], function (key, val) {
+            $('#console').append('<p class="system-message">' + val['message'] + '</p>');
+        });
+    }
+    
+    function ClearConsole() {
+        $('#console').empty();
+    }
+    
+    $(document).ready(function () {
+    
+        // Initialize perfect-scrollbar
+        Ps.initialize($('#console')[0]);
+    
+        // Get data
+        $.getJSON('assets/data.json', function(json) {
+            data = json;
+            ShowSavedMessage('intro');
+            $('#console').append('<p class="user-inputting">$&nbsp;<input type="text" autofocus></input></p>');
+            $(document).keydown(function(e) {
+                if (e.which == 38) {
+                    $('input').val(lastInput);
+                }
+                else if (e.which == 13) {
+                    var $CurrentInputLine = $('.user-inputting');
+                    var input = $('input').val();
+                    var line = $CurrentInputLine.text() + input;
+                    
+                    // Process input
+                    switch (input.toUpperCase()) {
+                        case 'HELP':
+                            ShowSavedMessage('help');
+                            break;
+                        case 'INTRO':
+                        case 'ABOUT':
+                            ShowSavedMessage('intro');
+                            break;
+                        case 'CLS':
+                        case 'CLEAR':
+                            ClearConsole();
+                            break;
+                        default:
+                            $('#console').append('<p class="system-message">"' + input + '" is not recognized as an available command.<br />Enter HELP for a list of available commands.</p>');
+                    }
+                    lastInput = input;
+                    
+                    // Update console display
+                    $CurrentInputLine.text(line).addClass('user-inputted').removeClass('user-inputting');
+                    $('#console').append('<p class="user-inputting">$&nbsp;<input type="text" autofocus></input></p>')
+
+                }
+                $('input')[0].focus();
+            });
+        });
+    
+    
+        
+        
+    });
+    
+    </script>
+
+</body>
+</html>

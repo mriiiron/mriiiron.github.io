@@ -1,0 +1,79 @@
+@font-face {
+    font-family: "CHAWP";
+    src: url("/assets/fonts/chawp.otf");
+}
+
+body {
+    font-family: "Palatino", "Palatino Linotype", "Palatino LT STD", "Book Antiqua", "Georgia", "Microsoft Yahei", "微软雅黑", serif;
+    color: white;
+    background-color: black;
+    background-repeat: no-repeat;
+    background-position: center top;
+    margin: 0;
+}
+
+a {
+    text-decoration: none;
+}
+
+a:link, a:visited {
+    color: #66CCFF;
+}
+
+a:hover, a:active {
+    color: white;
+}
+
+.container {
+    position: fixed;
+    padding: 0;
+    margin: 0;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.6);
+    overflow: auto;
+}
+
+.header {
+    position: absolute;
+    width: 100%;
+    height: 80px;
+}
+
+.panel {
+    position: absolute;
+    width: 1000px;
+    height: 700px;
+    top: 150px;
+    left: 50%;
+    margin-left: -500px;
+}
+
+.button {
+    color: white;
+    background: black;
+    padding: 5px 10px 5px 10px;
+    border: 1px solid white;
+    text-decoration: none;
+    -webkit-border-radius: 5px;
+    -moz-border-radius: 5px;
+    border-radius: 5px;
+}
+
+.button:hover {
+    background-color: white;
+    color: black;
+}
+
+.button:active {
+    background: silver;
+}
+
+.debugger {
+    position: fixed;
+    margin: 0;
+    right: 20px;
+    bottom: 20px;
+}
