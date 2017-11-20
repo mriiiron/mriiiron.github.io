@@ -1,0 +1,10 @@
+{
+  "songs": [
+    {
+      "songFile": "assets/music/She.mp3",
+      "lyricFile": "assets/music/She.txt",
+      "title": "She",
+      "artist": "Groove Coverage"
+    }
+  ]
+}
