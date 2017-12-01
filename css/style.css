@@ -1,0 +1,57 @@
+body {
+    margin: 0;
+}
+
+#side {
+    display: flex;
+    position: fixed;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 40%;
+    min-width: 350px;
+    max-width: 600px;
+    background-color: #333;
+    color: #eee;
+}
+
+#side .brand-wrap {
+    margin: auto 40px auto auto;
+}
+
+#side .brand {
+    font-family: 'Cabin Sketch', cursive;
+    font-size: 80px;
+}
+
+#side .brand-sub {
+    font-family: 'Cabin Sketch', cursive;
+    font-size: 20px;
+}
+
+#side .social-media-links {
+    padding: 0;
+}
+
+#side .social-media-links li {
+    display: inline;
+    list-style-type: none;
+    margin-right: 20px;
+}
+
+#side .social-media-links i.fa {
+    font-size: 20px;
+}
+
+#spacer {
+    display: inline-block;
+    width: 40%;
+    min-width: 350px;
+    max-width: 600px;
+    height: 6000px;
+}
+
+#main {
+    display: inline-block;
+    height: 6000px;
+}
