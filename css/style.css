@@ -12,7 +12,8 @@ html, body {
     width: 40%;
     min-width: 350px;
     max-width: 600px;
-    background-color: #333;
+    background-image: url(../assets/chalkboard.jpg);
+    background-repeat: repeat;
     color: #eee;
 }
 
@@ -70,8 +71,7 @@ html, body {
 #main .content {
     height: 100%;
     overflow: auto;
-    background-image: url(../assets/128-214.jpg);
-    background-repeat: repeat;
+    background-color: black;
 }
 
 #main .test {

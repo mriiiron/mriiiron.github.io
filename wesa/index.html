@@ -47,10 +47,10 @@
             </div>
             <div class="paragraph">
                 <h1>Getting Started</h1>
-                <p>Stay a while and <s>listen</s>learn the basic of <code>wesa.js</code>, see the documentation and check full code on GitHub.</p>
+                <p>Check out demos of <code>wesa.js</code>, get started with the documentation and see full code on GitHub.</p>
             </div>
             <div class="button-row">
-                <a href="#" class="btn disabled"><i class="fa fa-cube"></i> Basic Concepts</a>
+                <a href="#" class="btn disabled"><i class="fa fa-cube"></i> More Demo</a>
                 <a href="#" class="btn disabled"><i class="fa fa-book"></i> Documentation</a>
                 <a target="_blank" href="https://github.com/mriiiron/wesa" class="btn"><i class="fa fa-github"></i> Source Code</a>
             </div>
@@ -81,100 +81,20 @@
         canvas.addEventListener("mousewheel", onMouseWheel);
         canvas.addEventListener("DOMMouseScroll", onMouseWheel);  // Firefox
         
-        wesa.loader.loadImages([ './assets/texture/megaman.png' ]).done(function (images) {
+        // Initialize WESA
+        wesa.core.init(document.getElementById('canvas'));
         
-            // Initialize WESA
-            wesa.core.init(canvas);
+        // Adding assets ready for loading
+        wesa.assets.source.spriteSheetUrlArray.push('./assets/texture/megaman.png');
+        wesa.assets.source.objectJsonUrl = './assets/objects.json';
         
-            // Load sprite sheets
-            {
-                let ss = new wesa.SpriteSheet({
-                    ssid: 0,
-                    rowCount: 1,
-                    colCount: 10,
-                    cellWidth: 36,
-                    cellHeight: 36
-                });
-                ss.loadTextureFromImage(wesa.core.handle.gl, images[0]);
-                wesa.res.spriteSheetList[0] = ss;
-            }
-            
-            // Load stored objects
-            {
-                let ssList = wesa.res.spriteSheetList;
-                let obj = new wesa.StoredObject({
-                    oid: 0,
-                    type: 0,
-                    name: 'Megaman'
-                });
-                let f = [
-                    new wesa.Frame({
-                        spriteSheet: ssList[0],
-                        cell: { row: 0, col: 0, rowSpan: 1, colSpan: 1 },
-                        center: { x: 18, y: 18 }
-                    }),
-                    new wesa.Frame({
-                        spriteSheet: ssList[0],
-                        cell: { row: 0, col: 1, rowSpan: 1, colSpan: 1 },
-                        center: { x: 18, y: 18 }
-                    }),
-                    new wesa.Frame({
-                        spriteSheet: ssList[0],
-                        cell: { row: 0, col: 2, rowSpan: 1, colSpan: 1 },
-                        center: { x: 18, y: 18 }
-                    }),
-                    new wesa.Frame({
-                        spriteSheet: ssList[0],
-                        cell: { row: 0, col: 3, rowSpan: 1, colSpan: 1 },
-                        center: { x: 18, y: 18 }
-                    }),
-                    new wesa.Frame({
-                        spriteSheet: ssList[0],
-                        cell: { row: 0, col: 4, rowSpan: 1, colSpan: 1 },
-                        center: { x: 18, y: 18 }
-                    }),
-                    new wesa.Frame({
-                        spriteSheet: ssList[0],
-                        cell: { row: 0, col: 5, rowSpan: 1, colSpan: 1 },
-                        center: { x: 18, y: 18 }
-                    }),
-                    new wesa.Frame({
-                        spriteSheet: ssList[0],
-                        cell: { row: 0, col: 6, rowSpan: 1, colSpan: 1 },
-                        center: { x: 18, y: 18 }
-                    }),
-                    new wesa.Frame({
-                        spriteSheet: ssList[0],
-                        cell: { row: 0, col: 7, rowSpan: 1, colSpan: 1 },
-                        center: { x: 18, y: 18 }
-                    }),
-                    new wesa.Frame({
-                        spriteSheet: ssList[0],
-                        cell: { row: 0, col: 8, rowSpan: 1, colSpan: 1 },
-                        center: { x: 18, y: 18 }
-                    }),
-                    new wesa.Frame({
-                        spriteSheet: ssList[0],
-                        cell: { row: 0, col: 9, rowSpan: 1, colSpan: 1 },
-                        center: { x: 18, y: 18 }
-                    })
-                ];
-                let anim = new wesa.Animation({
-                    name: 'Running',
-                    next: 0
-                });
-                anim.setFrames(
-                    [f[0], f[1], f[2], f[3], f[4], f[5], f[6], f[7], f[8], f[9]],
-                    [4, 4, 4, 4, 4, 4, 4, 4, 4, 4]
-                );
-                obj.addAnimation(0, anim);
-                wesa.res.objectList[0] = obj;
-            }
+        // Load assets
+        wesa.assets.load(function () {
         
             // Create the scene
             var scene = new wesa.Scene('TestScene');
             s_Megaman = new wesa.Sprite({
-                object: wesa.res.objectList[0],
+                object: wesa.assets.objectList[0],
                 action: 0,
                 team: 0,
                 position: { x: 0, y: 0 },
@@ -189,7 +109,7 @@
                 scene.render();
             }
             animate();
-        
+            
         });
         
 

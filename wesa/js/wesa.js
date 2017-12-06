@@ -10,7 +10,7 @@
             gl.shaderSource(shader, source);
             gl.compileShader(shader);
             if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
-                console.error('An error occurred compiling the shaders: ' + gl.getShaderInfoLog(shader));
+                console.error('WESA Core: An error occurred compiling the shaders: ' + gl.getShaderInfoLog(shader));
                 gl.deleteShader(shader);
                 return null;
             }
@@ -25,13 +25,31 @@
             gl.attachShader(shaderProgram, fragmentShader);
             gl.linkProgram(shaderProgram);
             if (!gl.getProgramParameter(shaderProgram, gl.LINK_STATUS)) {
-                console.error('Unable to initialize the shader program: ' + gl.getshaderProgramInfoLog(shaderProgram));
+                console.error('WESA Core: Unable to initialize the shader program: ' + gl.getshaderProgramInfoLog(shaderProgram));
                 return null;
             }
             return shaderProgram;
         }
         
-        function initWebGL(canvas, gl, shader) {
+        function setProjection(gl, shader) {
+            let left = -gl.canvas.width / 2;
+            let right = gl.canvas.width / 2;
+            let bottom = -gl.canvas.height / 2;
+            let top = gl.canvas.height / 2;
+            let zNear = 0.1;
+            let zFar = 100.0;
+            let projectionMatrix = mat4.create();
+            mat4.ortho(projectionMatrix, left, right, bottom, top, zNear, zFar);
+            gl.uniformMatrix4fv(shader.uniformLocations.projectionMatrix, false, projectionMatrix);
+        }
+        
+        function setModelView(gl, shader) {
+            let modelViewMatrix = mat4.create();
+            mat4.translate(modelViewMatrix, modelViewMatrix, [0.0, 0.0, -6.0]);
+            gl.uniformMatrix4fv(shader.uniformLocations.modelViewMatrix, false, modelViewMatrix);
+        }
+        
+        function initWebGL(gl, shader) {
             
             // Set clearing options
             gl.clearColor(0.0, 0.0, 0.0, 1.0);
@@ -39,29 +57,16 @@
             gl.enable(gl.BLEND);
             gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
             
+            // Tell WebGL to use our program when drawing
+            gl.useProgram(shader.program);
+            
             // Set the projection matrix:
             // Create a orthogonal projection matrix for 480x640 viewport
-            const left = -canvas.width / 2;
-            const right = canvas.width / 2;
-            const bottom = -canvas.height / 2;
-            const top = canvas.height / 2;
-            const zNear = 0.1;
-            const zFar = 100.0;
-            const projectionMatrix = mat4.create();
-            mat4.ortho(projectionMatrix, left, right, bottom, top, zNear, zFar);
+            setProjection(gl, shader);
             
             // Set the model view matrix:
             // Under change based on camera (TODO)
-            const modelViewMatrix = mat4.create();
-            mat4.translate(modelViewMatrix, modelViewMatrix, [0.0, 0.0, -6.0]);
-            
-            // Tell WebGL to use our program when drawing
-            gl.useProgram(shader.program);
-
-            // Set the shader uniforms
-            // In this example, projection and model view matrices are passed as uniforms.
-            gl.uniformMatrix4fv(shader.uniformLocations.projectionMatrix, false, projectionMatrix);
-            gl.uniformMatrix4fv(shader.uniformLocations.modelViewMatrix, false, modelViewMatrix);
+            setModelView(gl, shader);
             
             // Tell WebGL we want to affect texture unit 0 and bound the texture to texture unit 0 (gl.TEXTURE0)
             gl.activeTexture(gl.TEXTURE0);
@@ -73,46 +78,127 @@
 
         }
         
-        // function loadImages(urlArray) {}
+
+        // "wesa.assets" object
         
-        
-        // "wesa.res" object
-        
-        const wesaResource = {
-            spriteSheetList: [],
-            objectList: []
-        }
-        
-        
-        // "wesa.loader" object
-        
-        const wesaLoader = {
+        const wesaAssets = {
             
-            loadImages: function (urlArray) {
-                var newImages = [], loadedCount = 0;
-                var callBack = function () {};
-                function imageLoaded() {
-                    loadedCount++;
-                    if (loadedCount == urlArray.length) {
-                        callBack(newImages);
+            source: {
+                spriteSheetUrlArray: [],
+                objectJsonUrl: null
+            },
+            
+            spriteSheetList: [],
+            objectList: [],
+            
+            load: function (callback) {
+                
+                let _self = this;
+                
+                if (_self.source.spriteSheetUrlArray.length == 0) {
+                    console.error('WESA Loader: No sprite sheet added.');
+                    return;
+                }
+                if (!_self.source.objectJsonUrl) {
+                    console.error('WESA Loader: No object added.');
+                    return;
+                }
+                
+                let loadedImageCount = 0;
+                let isObjectsLoaded = false;
+                
+                var loadedImages = [];
+                var loadedObjectJson = null;
+                
+                let imageUrls = _self.source.spriteSheetUrlArray;
+                
+                function onAssetLoaded(type) {
+                    if (type == 'image') {
+                        loadedImageCount++;
+                    }
+                    else if (type = 'object') {
+                        isObjectsLoaded = true;
+                    }
+                    if (loadedImageCount == imageUrls.length && isObjectsLoaded) {
+                        
+                        let parsed = JSON.parse(loadedObjectJson);
+                        
+                        // Load Sprite Sheets
+                        for (let i = 0; i < parsed.spriteSheetsMeta.length; i++) {
+                            let ssMeta = parsed.spriteSheetsMeta[i];
+                            let ss = new WESASpriteSheet({
+                                ssid: i,
+                                rowCount: ssMeta.rowCount,
+                                colCount: ssMeta.colCount,
+                                cellWidth: ssMeta.cellWidth,
+                                cellHeight: ssMeta.cellHeight
+                            });
+                            ss.loadTextureFromImage(wesaCore.handle.gl, loadedImages[i]);
+                            _self.spriteSheetList.push(ss);
+                        }
+                        
+                        // Load Objects
+                        for (let i = 0; i < parsed.objects.length; i++) {
+                            let objData = parsed.objects[i];
+                            let obj = new wesa.StoredObject({
+                                oid: i,
+                                type: objData.type,
+                                name: objData.name
+                            });
+                            let fArr = [];
+                            for (let j = 0; j < objData.frameLib.length; j++) {
+                                let f = objData.frameLib[j];
+                                fArr.push(new WESAFrame({
+                                    spriteSheet: _self.spriteSheetList[f.spriteSheet],
+                                    cell: { row: f.cell.row, col: f.cell.col, rowSpan: f.cell.rowSpan, colSpan: f.cell.colSpan },
+                                    center: { x: f.center.x, y: f.center.y }
+                                }));
+                            }
+                            for (let j = 0; j < objData.animList.length; j++) {
+                                let a = objData.animList[j];
+                                let anim = new WESAAnimation({
+                                    aid: j,
+                                    name: a.name,
+                                    next: a.next
+                                });
+                                anim.setFrames(Array.from(a.frameList, x => fArr[x]), a.frameTimeList.slice());
+                                obj.addAnimation(j, anim);
+                            }
+                            _self.objectList.push(obj);
+                        }
+                        
+                        callback();
                     }
                 }
-                for (var i = 0; i < urlArray.length; i++) {
-                    newImages[i] = new Image();
-                    newImages[i].src = urlArray[i];
-                    newImages[i].onload = function () {
-                        imageLoaded();
+                
+                for (var i = 0; i < imageUrls.length; i++) {
+                    loadedImages[i] = new Image();
+                    loadedImages[i].src = imageUrls[i];
+                    loadedImages[i].onload = function () {
+                        onAssetLoaded('image');
                     }
-                    newImages[i].onerror = function () {
-                        console.warning('[WARNING] "' + urlArray[i] + '" load failed.');
-                        imageLoaded();
-                    }
-                }
-                return {
-                    done: function (userFunction) {
-                        callBack = userFunction || callBack;
+                    loadedImages[i].onerror = function () {
+                        console.warning('WESA Loader: Image "' + urlArray[i] + '" load failed.');
+                        onAssetLoaded('image');
                     }
                 }
+                
+                let r = new XMLHttpRequest();
+                r.open('GET', this.source.objectJsonUrl)
+                r.onload = function () {
+                    if (r.status >= 200 && r.status < 400) {
+                        loadedObjectJson = r.responseText;
+                        onAssetLoaded('object');
+                    }
+                    else {
+                        console.error('WESA Loader: Cannot load JSON "' + this.source.objectJsonUrl + '".');
+                    }
+                }
+                r.onerror = function () {
+                    console.error('WESA Loader: Cannot load JSON "' + this.source.objectJsonUrl + '" (connection error).');
+                }
+                r.send();
+                
             }
             
         }
@@ -124,7 +210,6 @@
             
             handle: {
                 gl: null,
-                canvas: null,
                 shader: null,
                 buffer: null
             },
@@ -152,16 +237,21 @@
                 }
             },
             
+            canvasResize: function() {
+                setProjection(this.handle.gl, this.handle.shader);
+                this.handle.gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
+            },
+            
             init: function (canvas) {
                 
                 if (!canvas || canvas.tagName != 'CANVAS') {
-                    console.error('Canvas provided is invalid.');
+                    console.error('WESA Core: Canvas provided is invalid.');
                     return;
                 }
                 
                 const gl = canvas.getContext("webgl");
                 if (!gl) {
-                    console.error('Unable to initialize WebGL. Your browser or machine may not support it.');
+                    console.error('WESA Core: Unable to initialize WebGL. Your browser or machine may not support it.');
                     return;
                 }
                 
@@ -185,10 +275,9 @@
                     indices: gl.createBuffer()
                 };
                    
-                initWebGL(canvas, gl, shader);                
+                initWebGL(gl, shader);                
                 
                 this.handle.gl = gl;
-                this.handle.canvas = canvas;
                 this.handle.shader = shader;
                 this.handle.buffer = buffer;
                 
@@ -267,6 +356,7 @@
         
         
         function WESAAnimation(desc) {
+            this.aid = desc.aid
             this.name = desc.name;
             this.next = desc.next;
             this.frameList = [];
@@ -460,7 +550,7 @@
                     gl.vertexAttribPointer(shader.attribLocations.textureCoord, 2, gl.FLOAT, false, 0, 0);
                     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, buffer.indices);
                     gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(this.batchData[ssid].indices), gl.STATIC_DRAW);
-                    gl.bindTexture(gl.TEXTURE_2D, wesaResource.spriteSheetList[ssid].texture);
+                    gl.bindTexture(gl.TEXTURE_2D, wesaAssets.spriteSheetList[ssid].texture);
                     gl.drawElements(gl.TRIANGLES, this.batchData[ssid].indices.length, gl.UNSIGNED_SHORT, 0);
                 }
             }
@@ -597,8 +687,7 @@
             
             // Objects
             core: wesaCore,
-            res: wesaResource,
-            loader: wesaLoader
+            assets: wesaAssets,
 
         };
         
