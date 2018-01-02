@@ -1,0 +1,134 @@
+﻿{
+  "spriteSheetsMeta": [
+    {
+      "rowCount": 2,
+      "colCount": 4,
+      "cellWidth": 16,
+      "cellHeight": 16
+    }
+  ],
+  "objects": [
+    {
+      "type": 0,
+      "name": "Object",
+      "frameLib": [
+        {
+          "spriteSheet": 0,
+          "cell": {
+            "row": 0,
+            "col": 0,
+            "rowSpan": 1,
+            "colSpan": 1
+          },
+          "center": {
+            "x": 8,
+            "y": 8
+          }
+        },
+        {
+          "spriteSheet": 0,
+          "cell": {
+            "row": 0,
+            "col": 1,
+            "rowSpan": 1,
+            "colSpan": 1
+          },
+          "center": {
+            "x": 8,
+            "y": 8
+          }
+        },
+        {
+          "spriteSheet": 0,
+          "cell": {
+            "row": 1,
+            "col": 0,
+            "rowSpan": 1,
+            "colSpan": 1
+          },
+          "center": {
+            "x": 8,
+            "y": 8
+          }
+        },
+        {
+          "spriteSheet": 0,
+          "cell": {
+            "row": 1,
+            "col": 1,
+            "rowSpan": 1,
+            "colSpan": 1
+          },
+          "center": {
+            "x": 8,
+            "y": 8
+          }
+        },
+        {
+          "spriteSheet": 0,
+          "cell": {
+            "row": 0,
+            "col": 2,
+            "rowSpan": 1,
+            "colSpan": 1
+          },
+          "center": {
+            "x": 8,
+            "y": 16
+          }
+        },
+        {
+          "spriteSheet": 0,
+          "cell": {
+            "row": 0,
+            "col": 3,
+            "rowSpan": 1,
+            "colSpan": 1
+          },
+          "center": {
+            "x": 8,
+            "y": 16
+          }
+        }
+      ],
+      "animList": [
+        {
+          "name": "Car",
+          "next": 0,
+          "frameList": [0],
+          "frameTimeList": [10]
+        },
+        {
+          "name": "Truck",
+          "next": 1,
+          "frameList": [1],
+          "frameTimeList": [10]
+        },
+        {
+          "name": "Tree",
+          "next": 2,
+          "frameList": [2],
+          "frameTimeList": [10]
+        },
+        {
+          "name": "Shrub",
+          "next": 3,
+          "frameList": [3],
+          "frameTimeList": [10]
+        },
+        {
+          "name": "House",
+          "next": 4,
+          "frameList": [4],
+          "frameTimeList": [10]
+        },
+        {
+          "name": "House-L",
+          "next": 5,
+          "frameList": [5],
+          "frameTimeList": [10]
+        }
+      ]
+    }
+  ]
+}
