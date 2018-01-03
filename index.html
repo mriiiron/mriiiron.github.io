@@ -17,6 +17,20 @@
     
     <script>
     
+        var sprites = [
+            { action: 2, x: 20, y: 80 },
+            { action: 3, x: -70, y: 80 },
+            { action: 2, x: -35, y: 70 },
+            { action: 3, x: 110, y: 70 },
+            { action: 2, x: -100, y: 40 },
+            { action: 2, x: 120, y: 30 },
+            { action: 2, x: -160, y: 25 },
+            { action: 3, x: 50, y: 15 },
+            { action: 3, x: 170, y: 10 },
+            { action: 5, x: -40, y: 0 },
+            { action: 1, x: 60, y: -25 }
+        ];
+    
         function resizeCanvas(canvas) {
             if (canvas.width != canvas.clientWidth || canvas.height != canvas.clientHeight) {
                 canvas.width = canvas.clientWidth;
@@ -26,7 +40,6 @@
         }
     
         var canvas = document.getElementById('canvas');
-        var sprite = null;
         
         // Initialize WESA
         wesa.core.init(canvas);
@@ -43,14 +56,17 @@
         
             // Create the scene
             var scene = new wesa.Scene('Scene');
-            sprite = new wesa.Sprite({
-                object: wesa.assets.objectList[0],
-                action: 0,
-                team: 0,
-                position: { x: 0, y: 0 },
-                scale: 6
-            });
-            scene.addSpriteToLayer(0, sprite);
+            
+            for (let i = 0; i < sprites.length; i++) {
+                let s = sprites[i];
+                scene.addSpriteToLayer(0, new wesa.Sprite({
+                    object: wesa.assets.objectList[0],
+                    action: s.action,
+                    team: 0,
+                    position: { x: s.x, y: s.y },
+                    scale: 5
+                }));
+            }
 
             // Run the scene
             var animate = function () {

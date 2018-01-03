@@ -69,7 +69,7 @@
           "cell": {
             "row": 0,
             "col": 2,
-            "rowSpan": 1,
+            "rowSpan": 2,
             "colSpan": 1
           },
           "center": {
@@ -82,7 +82,7 @@
           "cell": {
             "row": 0,
             "col": 3,
-            "rowSpan": 1,
+            "rowSpan": 2,
             "colSpan": 1
           },
           "center": {
