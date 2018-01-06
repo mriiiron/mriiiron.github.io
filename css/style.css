@@ -1,11 +1,67 @@
-html, body {
-    width: 100%;
-    height: 100%;
-    margin: 0;
+@font-face {
+    font-family: 'Vince';
+    src: url('./fonts/Vince.eot'),
+         url('./fonts/Vince.woff') format('woff'), /* Pretty Modern Browsers */
+         url('./fonts/Vince.ttf')  format('truetype'), /* Safari, Android, iOS */
+         url('./fonts/Vince.svg#svgFontName') format('svg'); /* Legacy iOS */
 }
 
-.resizable-wrapper {
+@font-face {
+    font-family: 'SomepxNew';
+    src: url('./fonts/SomepxNew.eot'),
+         url('./fonts/SomepxNew.woff') format('woff'), /* Pretty Modern Browsers */
+         url('./fonts/SomepxNew.ttf')  format('truetype'), /* Safari, Android, iOS */
+         url('./fonts/SomepxNew.svg#svgFontName') format('svg'); /* Legacy iOS */
+}
+
+html, body {
+    margin: 0;
     width: 100%;
     height: 100%;
-    overflow: hidden;
+}
+
+a {
+    color: #7e2c27;
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+.wrapper {
+    display: flex;
+    width: 100%;
+    height: 100%;
+    font-family: 'SomepxNew', sans-serif;
+    font-size: 1.5em;
+    color: #7e2c27;
+}
+
+.wrapper .centered {
+    margin: 50px auto auto auto;
+    text-align: center;
+}
+
+.wrapper .centered h1 {
+    font-family: 'Vince', sans-serif;
+    font-weight: normal;
+    font-size: 3em;
+    letter-spacing: 6px;
+}
+
+.wrapper .centered p {
+    font-family: 'SomepxNew', sans-serif;
+}
+
+.wrapper .centered ul {
+    list-style-type: none;
+    display: flex;
+    padding: 0;
+    justify-content: space-around;
+}
+
+.wrapper .centered ul .disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
 }

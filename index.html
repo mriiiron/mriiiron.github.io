@@ -9,8 +9,17 @@
 
 <body>
 
-    <div class="resizable-wrapper">
-        <canvas id="canvas" style="width:100%;height:100%"></canvas>
+    <div class="wrapper">
+        <div class="centered">
+            <canvas id="canvas" width="640" height="360"></canvas>
+            <h1>Caiyi Zhong</h1>
+            <ul>
+                <li class="disabled">Blog</li>
+                <li class="disabled">Project</li>
+                <li><a href="https://github.com/mriiiron" target="_blank">GitHub</a></li>
+                <li class="disabled">Resume</li>
+            </ul>
+        </div>
     </div>
 
     <script src="./js/wesa.js"></script>
@@ -26,7 +35,6 @@
         }
     
         var canvas = document.getElementById('canvas');
-        var sprite = null;
         
         // Initialize WESA
         wesa.core.init(canvas);
@@ -35,7 +43,7 @@
         wesa.core.handle.gl.clearColor(1.0, 1.0, 1.0, 1.0);
         
         // Adding assets ready for loading
-        wesa.assets.source.spriteSheetUrlArray.push('./assets/sprites.png');
+        wesa.assets.source.spriteSheetUrlArray.push('./assets/SlimeA.png');
         wesa.assets.source.objectJsonUrl = './assets/objects.json';
         
         // Load assets
@@ -43,12 +51,15 @@
         
             // Create the scene
             var scene = new wesa.Scene('Scene');
-            sprite = new wesa.Sprite({
+            
+            
+            
+            var sprite = new wesa.Sprite({
                 object: wesa.assets.objectList[0],
                 action: 0,
                 team: 0,
                 position: { x: 0, y: 0 },
-                scale: 6
+                scale: 4
             });
             scene.addSpriteToLayer(0, sprite);
 
