@@ -5,6 +5,18 @@
       "colCount": 16,
       "cellWidth": 16,
       "cellHeight": 16
+    },
+    {
+      "rowCount": 5,
+      "colCount": 3,
+      "cellWidth": 16,
+      "cellHeight": 16
+    },
+    {
+      "rowCount": 5,
+      "colCount": 1,
+      "cellWidth": 384,
+      "cellHeight": 216
     }
   ],
   "objects": [
@@ -223,10 +235,159 @@
       ],
       "animList": [
         {
-          "name": "Idle",
+          "name": "Hopping",
           "next": 0,
           "frameList": [1, 2, 3, 4, 5, 6],
           "frameTimeList": [5, 5, 5, 5, 5, 5]
+        }
+      ]
+    },
+    {
+      "type": 0,
+      "name": "Background",
+      "frameLib": [
+        {
+          "spriteSheet": 2,
+          "cell": {
+            "row": 0,
+            "col": 0,
+            "rowSpan": 1,
+            "colSpan": 1
+          },
+          "center": {
+            "x": 192,
+            "y": 108
+          }
+        },
+        {
+          "spriteSheet": 2,
+          "cell": {
+            "row": 1,
+            "col": 0,
+            "rowSpan": 1,
+            "colSpan": 1
+          },
+          "center": {
+            "x": 192,
+            "y": 108
+          }
+        },
+        {
+          "spriteSheet": 2,
+          "cell": {
+            "row": 2,
+            "col": 0,
+            "rowSpan": 1,
+            "colSpan": 1
+          },
+          "center": {
+            "x": 192,
+            "y": 108
+          }
+        },
+        {
+          "spriteSheet": 2,
+          "cell": {
+            "row": 3,
+            "col": 0,
+            "rowSpan": 1,
+            "colSpan": 1
+          },
+          "center": {
+            "x": 192,
+            "y": 108
+          }
+        },
+        {
+          "spriteSheet": 2,
+          "cell": {
+            "row": 4,
+            "col": 0,
+            "rowSpan": 1,
+            "colSpan": 1
+          },
+          "center": {
+            "x": 192,
+            "y": 108
+          }
+        }
+      ],
+      "animList": [
+        {
+          "name": "Layer 0",
+          "next": 0,
+          "frameList": [0],
+          "frameTimeList": [10]
+        },
+        {
+          "name": "Layer 1",
+          "next": 1,
+          "frameList": [1],
+          "frameTimeList": [10]
+        },
+        {
+          "name": "Layer 2",
+          "next": 2,
+          "frameList": [2],
+          "frameTimeList": [10]
+        },
+        {
+          "name": "Layer 3",
+          "next": 3,
+          "frameList": [3],
+          "frameTimeList": [10]
+        },
+        {
+          "name": "Layer 4",
+          "next": 4,
+          "frameList": [4],
+          "frameTimeList": [10]
+        }
+      ]
+    },
+    {
+      "type": 0,
+      "name": "Tile",
+      "frameLib": [
+        {
+          "spriteSheet": 1,
+          "cell": {
+            "row": 0,
+            "col": 0,
+            "rowSpan": 3,
+            "colSpan": 1
+          },
+          "center": {
+            "x": 8,
+            "y": 24
+          }
+        },
+        {
+          "spriteSheet": 1,
+          "cell": {
+            "row": 2,
+            "col": 0,
+            "rowSpan": 3,
+            "colSpan": 1
+          },
+          "center": {
+            "x": 8,
+            "y": 24
+          }
+        }
+      ],
+      "animList": [
+        {
+          "name": "Floor",
+          "next": 0,
+          "frameList": [0],
+          "frameTimeList": [10]
+        },
+        {
+          "name": "Ceiling",
+          "next": 1,
+          "frameList": [1],
+          "frameTimeList": [10]
         }
       ]
     }
