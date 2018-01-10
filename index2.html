@@ -1,0 +1,176 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+    <title>mriiiron</title>
+    <link rel="stylesheet" type="text/css" href="./css/style.css">
+</head>
+
+<body>
+
+    <div class="wrapper">
+        <div class="centered">
+            <canvas id="canvas" width="640" height="480"></canvas>
+            <!--h1>Caiyi Zhong</h1-->
+            <ul>
+                <li class="disabled">My Blog</li>
+                <li class="disabled">My Projects</li>
+                <li><a href="https://github.com/mriiiron" target="_blank">My GitHub</a></li>
+                <li class="disabled">My Resume</li>
+            </ul>
+        </div>
+    </div>
+
+    <script src="./js/wesa.js"></script>
+
+    <script>
+
+        var g_BG = {
+            layers: [
+                { tile: [], parallaxSpeed: 0.0 },
+                { tile: [], parallaxSpeed: 0.1 },
+                { tile: [], parallaxSpeed: 0.2 },
+                { tile: [], parallaxSpeed: 0.3 },
+                { tile: [], parallaxSpeed: 0.4 }
+            ],
+            left: 0,
+            right: 0,
+            tileCount: 2,
+            tileWidth: 384,
+            scaling: 2
+        };
+
+        var g_Map = {
+            floor: [],
+            ceiling: [],
+            left: 0,
+            right: 0,
+            tileCount: 12,
+            tileWidth: 16,
+            scaling: 4
+        };
+
+        function addBG(scene, bg) {
+            bg.left = (-bg.tileWidth / 2 * bg.scaling) * (bg.tileCount);
+            bg.right = -bg.left;
+            let x = bg.left;
+            for (let i = 0; i < bg.tileCount; i++) {
+                for (let j = 0; j < bg.layers.length; j++) {
+                    let layer = bg.layers[j];
+                    let tile = new wesa.Sprite({
+                        object: wesa.assets.objectList[1],
+                        action: j,
+                        team: 0,
+                        position: { x: x, y: 20 },
+                        scale: bg.scaling
+                    });
+                    tile.velocity.x = layer.parallaxSpeed;
+                    layer.tile.push(tile);
+                    scene.addSpriteToLayer(j, tile);
+                }
+                x += bg.tileWidth * bg.scaling;
+            }
+        }
+
+        function updateBG(bg) {
+            for (let i = 0; i < bg.layers.length; i++) {
+                for (let j = 0; j < bg.tileCount; j++) {
+                    let tile = bg.layers[i].tile[j];
+                    if (tile.position.x >= bg.right) { tile.position.x = bg.left; }
+                }
+            }
+        }
+
+        function addMap(scene, map) {
+            let yFloor = -260, yCeiling = 280;
+            let mapSpeed = 1;
+            map.left = (-map.tileWidth / 2 * map.scaling) * (map.tileCount);
+            map.right = -map.left;
+            let x = map.left;
+            for (let i = 0; i < map.tileCount; i++) {
+                let tileFloor = new wesa.Sprite({
+                    object: wesa.assets.objectList[2],
+                    action: 0,
+                    position: { x: x, y: yFloor },
+                    team: 0,
+                    scale: map.scaling
+                });
+                tileFloor.velocity.x = mapSpeed;
+                map.floor.push(tileFloor);
+                let tileCeiling = new wesa.Sprite({
+                    object: wesa.assets.objectList[2],
+                    action: 1,
+                    position: { x: x, y: yCeiling },
+                    team: 0,
+                    scale: map.scaling
+                });
+                tileCeiling.velocity.x = mapSpeed;
+                map.ceiling.push(tileCeiling);
+                scene.addSpriteToLayer(5, tileFloor);
+                scene.addSpriteToLayer(5, tileCeiling);
+                x += map.tileWidth * map.scaling;
+            }
+        }
+
+        function updateMap(map) {
+            for (let i = 0; i < map.tileCount; i++) {
+                let tileFloor = map.floor[i], tileCeiling = map.ceiling[i];
+                if (tileFloor.position.x >= map.right) { tileFloor.position.x = map.left; }
+                if (tileCeiling.position.x >= map.right) { tileCeiling.position.x = map.left; }
+            }
+        }
+
+        function addPlayer(scene) {
+            scene.addSpriteToLayer(6, new wesa.Sprite({
+                object: wesa.assets.objectList[0],
+                action: 0,
+                team: 0,
+                position: { x: 0, y: -150 },
+                scale: 4
+            }));
+        }
+
+        var canvas = document.getElementById('canvas');
+
+        // Initialize WESA
+        wesa.core.init(canvas);
+
+        // Set background to white;
+        wesa.core.handle.gl.clearColor(1.0, 1.0, 1.0, 1.0);
+
+        // Adding assets ready for loading
+        wesa.assets.source.spriteSheetUrlArray.push('./assets/slime.png');
+        wesa.assets.source.spriteSheetUrlArray.push('./assets/tileset.png');
+        wesa.assets.source.spriteSheetUrlArray.push('./assets/bg.png');
+        wesa.assets.source.objectJsonUrl = './assets/objects.json';
+
+        // Load assets
+        wesa.assets.load(function () {
+
+            // Create the scene
+            var scene = new wesa.Scene('Scene');
+
+            addBG(scene, g_BG);
+            addMap(scene, g_Map);
+            addPlayer(scene);
+
+            // Run the scene
+            var animate = function () {
+                requestAnimationFrame(animate);
+
+                updateBG(g_BG);
+                updateMap(g_Map);
+
+                scene.update();
+                scene.render();
+            }
+            animate();
+
+        });
+
+    </script>
+
+</body>
+
+</html>

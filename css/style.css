@@ -39,8 +39,13 @@ a:hover {
 }
 
 .wrapper .centered {
-    margin: 25px auto auto auto;
+    margin: auto;
     text-align: center;
+}
+
+#canvas {
+    border-top: 1px solid #7e2c27;
+    border-bottom: 1px solid #7e2c27;
 }
 
 .wrapper .centered h1 {
