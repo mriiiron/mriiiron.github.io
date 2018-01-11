@@ -26,89 +26,116 @@
 
     <script>
 
-        var g_Scenes = {
-            intro: null,
-            projects: null,
-            about: null
-        };
-
-        var g_TileArray = {
-            data: [],
-            map: [
-                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                [0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 1, 1, 0, 0, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0],
-                [0, 0, 0, 0, 1, 1, 1, 1, 0, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 0, 1, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0],
-                [0, 0, 0, 0, 1, 1, 0, 0, 0, 1, 1, 0, 1, 0, 1, 1, 0, 1, 1, 1, 1, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0],
-                [0, 0, 0, 0, 1, 1, 0, 0, 0, 1, 1, 1, 1, 0, 1, 1, 0, 0, 1, 1, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0],
-                [0, 0, 0, 0, 0, 1, 1, 1, 0, 1, 1, 0, 1, 0, 1, 1, 0, 0, 1, 1, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0],
-                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-            ],
-            size: 32,
-            dx: 20,
-            dy: 10
+        function TileMap() {
+            this.tiles = [];
+            this.map = [
+                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                [0, 1, 1, 1, 0, 0, 1, 1, 0, 0, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1],
+                [1, 1, 1, 1, 0, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 0, 1, 0, 1, 1],
+                [1, 1, 0, 0, 0, 1, 1, 0, 1, 0, 1, 1, 0, 1, 1, 1, 1, 0, 1, 1],
+                [1, 1, 0, 0, 0, 1, 1, 1, 1, 0, 1, 1, 0, 0, 1, 1, 0, 0, 1, 1],
+                [0, 1, 1, 1, 0, 1, 1, 0, 1, 0, 1, 1, 0, 0, 1, 1, 0, 0, 1, 1],
+                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            ];
+            this.size = 20;
+            this.dx = 25;
+            this.dy = 12.5;
         }
 
-        function initScene() {
-            let size = g_TileArray.size, dx = g_TileArray.dx, dy = g_TileArray.dy;
-            for (let i = 0; i < size; i++) {
+        TileMap.prototype.init = function () {
+            for (let i = 0; i < this.size; i++) {
                 let row = [];
-                let x = -dx * i, y = dy * (size - 1 - i);
-                for (let j = 0; j < size; j++) {
-                    if (g_TileArray.map[i][j]) {
-                        row.push(new wesa.Sprite({
-                            object: wesa.assets.objectList[0],
-                            action: 1,
-                            team: 0,
-                            position: { x: x, y: y },
-                            scale: 1
-                        }));
+                let x = -this.dx * (this.size - 1 - i), y = -this.dy * i ;
+                for (let j = 0; j < this.size; j++) {
+                    if (this.map[i][j] == 1) {
+                        let tile = {
+                            sprite: new wesa.Sprite({
+                                object: wesa.assets.objectList[0],
+                                action: 0,
+                                team: 0,
+                                position: { x: x, y: y },
+                                scale: 0.5
+                            }),
+                            size: { x: 25, y: 12.5 }
+                        };
+                        row.push(tile);
                     }
                     else {
                         row.push(null);
                     }
-                    x += dx;
-                    y -= dy;
+                    x += this.dx;
+                    y += this.dy;
                 }
-                g_TileArray.data.push(row);
+                this.tiles.push(row);
             }
-            g_Scenes.intro = new wesa.Scene('Intro');
-            for (let i = 0; i < size; i++) {
-                for (let j = 0; j < size; j++) {
-                    if (g_TileArray.data[i][j]) {
-                        g_Scenes.intro.addSpriteToLayer(0, g_TileArray.data[i][j]);
+        };
+
+        TileMap.prototype.toScene = function (scene, layer) {
+            let it = TileMap.makeIterator(this);
+            let item = it.next();
+            while (!item.done) {
+                if (item.tile) {
+                    scene.addSpriteToLayer(layer, item.tile.sprite);
+                }
+                item = it.next();
+            }
+        };
+
+        TileMap.makeIterator = function (tm) {
+            var line = 1 - tm.size;
+            var row = line, col = 0;
+            return {
+                init: function () {
+                    line = 1 - tm.size;
+                    row = line;
+                    col = 0;
+                },
+                next: function () {
+                    if (col >= tm.size || row >= tm.size) {
+                        line++;
+                        row = line;
+                        col = 0;
+                    }
+                    if (line < tm.size) {
+                        while (row < 0) { row++; col++; }
+                        return { tile: tm.tiles[row++][col++], done: false };
+                    }
+                    else {
+                        return { tile: null, done: true };
                     }
                 }
-            }
-
+            };
         }
 
+        var tm = new TileMap();
+
+        var scenes = {
+            home: null,
+            projects: null,
+            about: null
+        };
 
         var canvas = document.getElementById('canvas');
+        var mouse = { x: 0, y: 0 };
+
+        canvas.onmousemove = function(e) {
+            mouse.x = e.pageX - canvas.offsetLeft - canvas.width / 2;
+            mouse.y = canvas.height / 2 - (e.pageY - canvas.offsetTop);
+            console.log(mouse);
+        };
 
         // Initialize WESA
         wesa.core.init(canvas);
@@ -117,19 +144,35 @@
         wesa.core.handle.gl.clearColor(1.0, 1.0, 1.0, 1.0);
 
         // Adding assets ready for loading
-        wesa.assets.source.spriteSheetUrlArray.push('./assets/tile.png');
+        wesa.assets.source.spriteSheetUrlArray.push('./assets/tiles.png');
         wesa.assets.source.objectJsonUrl = './assets/objects.json';
 
         // Load assets
         wesa.assets.load(function () {
 
-            initScene();
+            scenes.home = new wesa.Scene('Home');
+            tm.init();
+            tm.toScene(scenes.home, 0);
 
-            var activeScene = g_Scenes.intro;
+            var activeScene = scenes.home;
 
             // Run the scene
             var animate = function () {
                 requestAnimationFrame(animate);
+
+                for (let i = 0; i < tm.size; i++) {
+                    for (let j = 0; j < tm.size; j++) {
+                        let tile = tm.tiles[i][j];
+                        if (tile) {
+                            let dx = Math.abs(mouse.x - tile.sprite.position.x);
+                            let dy = Math.abs(mouse.y - tile.sprite.position.y);
+                            if (dx / tile.size.x + dy / tile.size.y < 1) {
+                                tile.sprite.changeAction(1);
+                            }
+                        }
+                    }
+                }
+
                 activeScene.update();
                 activeScene.render();
             }

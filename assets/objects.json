@@ -1,10 +1,10 @@
 ﻿{
   "spriteSheetsMeta": [
     {
-      "rowCount": 1,
+      "rowCount": 2,
       "colCount": 5,
-      "cellWidth": 32,
-      "cellHeight": 32
+      "cellWidth": 100,
+      "cellHeight": 65
     }
   ],
   "objects": [
@@ -21,8 +21,8 @@
             "colSpan": 1
           },
           "center": {
-            "x": 16,
-            "y": 16
+            "x": 50,
+            "y": 40
           }
         },
         {
@@ -34,8 +34,8 @@
             "colSpan": 1
           },
           "center": {
-            "x": 16,
-            "y": 16
+            "x": 50,
+            "y": 40
           }
         },
         {
@@ -47,8 +47,8 @@
             "colSpan": 1
           },
           "center": {
-            "x": 16,
-            "y": 16
+            "x": 50,
+            "y": 40
           }
         },
         {
@@ -60,8 +60,8 @@
             "colSpan": 1
           },
           "center": {
-            "x": 16,
-            "y": 16
+            "x": 50,
+            "y": 40
           }
         },
         {
@@ -73,23 +73,88 @@
             "colSpan": 1
           },
           "center": {
-            "x": 16,
-            "y": 16
+            "x": 50,
+            "y": 40
+          }
+        },
+        {
+          "spriteSheet": 0,
+          "cell": {
+            "row": 1,
+            "col": 0,
+            "rowSpan": 1,
+            "colSpan": 1
+          },
+          "center": {
+            "x": 50,
+            "y": 40
+          }
+        },
+        {
+          "spriteSheet": 0,
+          "cell": {
+            "row": 1,
+            "col": 1,
+            "rowSpan": 1,
+            "colSpan": 1
+          },
+          "center": {
+            "x": 50,
+            "y": 40
+          }
+        },
+        {
+          "spriteSheet": 0,
+          "cell": {
+            "row": 1,
+            "col": 2,
+            "rowSpan": 1,
+            "colSpan": 1
+          },
+          "center": {
+            "x": 50,
+            "y": 40
+          }
+        },
+        {
+          "spriteSheet": 0,
+          "cell": {
+            "row": 1,
+            "col": 3,
+            "rowSpan": 1,
+            "colSpan": 1
+          },
+          "center": {
+            "x": 50,
+            "y": 40
+          }
+        },
+        {
+          "spriteSheet": 0,
+          "cell": {
+            "row": 1,
+            "col": 4,
+            "rowSpan": 1,
+            "colSpan": 1
+          },
+          "center": {
+            "x": 50,
+            "y": 40
           }
         }
       ],
       "animList": [
         {
-          "name": "Idle",
+          "name": "Grass_Idle",
           "next": 0,
           "frameList": [0],
           "frameTimeList": [10]
         },
         {
-          "name": "DropIn",
-          "next": 0,
-          "frameList": [4, 3, 2, 1, 0],
-          "frameTimeList": [2, 2, 2, 2, 2]
+          "name": "Dirt_Idle",
+          "next": 1,
+          "frameList": [5],
+          "frameTimeList": [10]
         }
       ]
     }
