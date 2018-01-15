@@ -145,14 +145,26 @@
       ],
       "animList": [
         {
-          "name": "Grass_Idle",
+          "name": "Hidden",
           "next": 0,
+          "frameList": [null],
+          "frameTimeList": [10]
+        },
+        {
+          "name": "Grass_Idle",
+          "next": 1,
           "frameList": [0],
           "frameTimeList": [10]
         },
         {
-          "name": "Dirt_Idle",
+          "name": "Grass_FadeIn",
           "next": 1,
+          "frameList": [4, 3, 2, 1],
+          "frameTimeList": [3, 3, 3, 3]
+        },
+        {
+          "name": "Dirt_Idle",
+          "next": 3,
           "frameList": [5],
           "frameTimeList": [10]
         }

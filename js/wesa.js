@@ -620,8 +620,8 @@
                 if (this.spriteList[i]) {
                     let sprite = this.spriteList[i];
                     let frame = sprite.getCurrentFrame();
-                    let ssid = frame.spriteSheet.ssid;
                     if (frame) {
+                        let ssid = frame.spriteSheet.ssid;
                         let x1, x2, y1, y2, texClip;
                         if (sprite instanceof WESASprite) {
                             x1 = sprite.position.x - frame.center.x * sprite.scale;
@@ -630,9 +630,17 @@
                             y2 = y1 + frame.height * sprite.scale;
                             texClip = frame.spriteSheet.getTextureClipByPosition(frame.cell.row, frame.cell.col, frame.cell.rowSpan, frame.cell.colSpan);
                         }
-                        else {
-                            console.error('WESALayer: An error occurred when rendering: Unknown sprite type: ' + sprite.constructor.name);
-                            return;
+                        else if (sprite instanceof WESATiledSprite) {
+                            x1 = sprite.position.x;
+                            x2 = x1 + sprite.width;
+                            y1 = sprite.position.y;
+                            y2 = y1 + sprite.height;
+                            texClip = {
+                                x1: sprite.texOffset.x,
+                                y1: sprite.texOffset.y,
+                                x2: sprite.texOffset.x + sprite.width / frame.width,
+                                y2: sprite.texOffset.y + sprite.height / frame.height
+                            };
                         }
                         if (this.batchData[ssid]) {
                             this.batchData[ssid].spriteCount++;

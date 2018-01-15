@@ -43,9 +43,9 @@
                 [0, 1, 1, 1, 0, 1, 1, 0, 1, 0, 1, 1, 0, 0, 1, 1, 0, 0, 1, 1],
                 [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                 [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 1, 1, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 1, 0, 1, 1, 0, 0, 0, 0, 0, 0],
                 [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                 [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                 [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -56,19 +56,44 @@
         }
 
         TileMap.prototype.init = function () {
+            let wait = 0;
             for (let i = 0; i < this.size; i++) {
                 let row = [];
                 let x = -this.dx * (this.size - 1 - i), y = -this.dy * i ;
+                if (wait > 0) { wait++; }
                 for (let j = 0; j < this.size; j++) {
                     if (this.map[i][j] == 1) {
+                        let tileAI = new wesa.AI();
+                        if (wait == 0) {
+                            wait = 1;
+                        }
+                        tileAI.wait = wait;
+                        tileAI.execute = function () {
+                            if (this.wait == 0) {
+                                return;
+                            }
+                            else {
+                                this.wait--;
+                                if (this.wait == 0) {
+                                    this.self.changeAction(2);
+                                }
+                            }
+                            // let dx = Math.abs(mouse.x - tile.sprite.position.x);
+                            // let dy = Math.abs(mouse.y - tile.sprite.position.y);
+                            // if (dx / tile.size.x + dy / tile.size.y < 1) {
+                            //     this.self.changeAction(2);
+                            // }
+                        }
+                        let tileSprite = new wesa.Sprite({
+                            object: wesa.assets.objectList[0],
+                            action: 0,
+                            team: 0,
+                            position: { x: x, y: y },
+                            scale: 0.5
+                        });
+                        tileSprite.setAI(tileAI);
                         let tile = {
-                            sprite: new wesa.Sprite({
-                                object: wesa.assets.objectList[0],
-                                action: 0,
-                                team: 0,
-                                position: { x: x, y: y },
-                                scale: 0.5
-                            }),
+                            sprite: tileSprite,
                             size: { x: 25, y: 12.5 }
                         };
                         row.push(tile);
@@ -159,20 +184,6 @@
             // Run the scene
             var animate = function () {
                 requestAnimationFrame(animate);
-
-                for (let i = 0; i < tm.size; i++) {
-                    for (let j = 0; j < tm.size; j++) {
-                        let tile = tm.tiles[i][j];
-                        if (tile) {
-                            let dx = Math.abs(mouse.x - tile.sprite.position.x);
-                            let dy = Math.abs(mouse.y - tile.sprite.position.y);
-                            if (dx / tile.size.x + dy / tile.size.y < 1) {
-                                tile.sprite.changeAction(1);
-                            }
-                        }
-                    }
-                }
-
                 activeScene.update();
                 activeScene.render();
             }
