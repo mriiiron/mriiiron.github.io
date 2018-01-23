@@ -10,11 +10,10 @@ html, body {
     margin: 0;
     width: 100%;
     height: 100%;
-    background-color: #000;
 }
 
 a {
-    color: #e79c21;
+    color: #7e2c27;
     text-decoration: none;
 }
 
@@ -28,7 +27,7 @@ a:hover {
     height: 100%;
     font-family: 'SomepxNew', sans-serif;
     font-size: 1.5em;
-    color: #e79c21;
+    color: #7e2c27;
 }
 
 .wrapper .centered {

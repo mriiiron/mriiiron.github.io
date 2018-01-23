@@ -14,10 +14,10 @@
             <canvas id="canvas" width="640" height="480"></canvas>
             <!--h1>Caiyi Zhong</h1-->
             <ul>
-                <li class="disabled">My Blog</li>
-                <li class="disabled">My Projects</li>
-                <li><a href="https://github.com/mriiiron" target="_blank">My GitHub</a></li>
-                <li class="disabled">About Me</li>
+                <li class="disabled">Projects</li>
+                <li><a href="https://github.com/mriiiron" target="_blank">GitHub</a></li>
+                <li class="disabled">Others</li>
+                <li class="disabled">Resume</li>
             </ul>
         </div>
     </div>
@@ -26,169 +26,50 @@
 
     <script>
 
-        function TileMap() {
-            this.tiles = [];
-            this.map = [
-                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                [0, 1, 1, 1, 0, 0, 1, 1, 0, 0, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1],
-                [1, 1, 1, 1, 0, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 0, 1, 0, 1, 1],
-                [1, 1, 0, 0, 0, 1, 1, 0, 1, 0, 1, 1, 0, 1, 1, 1, 1, 0, 1, 1],
-                [1, 1, 0, 0, 0, 1, 1, 1, 1, 0, 1, 1, 0, 0, 1, 1, 0, 0, 1, 1],
-                [0, 1, 1, 1, 0, 1, 1, 0, 1, 0, 1, 1, 0, 0, 1, 1, 0, 0, 1, 1],
-                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                [0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 1, 1, 0, 0, 0, 0, 0],
-                [0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0],
-                [0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 1, 0, 1, 1, 0, 0, 0, 0, 0, 0],
-                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            ];
-            this.size = 20;
-            this.dx = 25;
-            this.dy = 12.5;
-        }
-
-        TileMap.prototype.init = function () {
-            let wait = 0;
-            for (let i = 0; i < this.size; i++) {
-                let row = [];
-                let x = -this.dx * (this.size - 1 - i), y = -this.dy * i ;
-                if (wait > 0) { wait++; }
-                for (let j = 0; j < this.size; j++) {
-                    if (this.map[i][j] == 1) {
-                        let tileAI = new wesa.AI();
-                        if (wait == 0) {
-                            wait = 1;
-                        }
-                        tileAI.wait = wait;
-                        tileAI.execute = function () {
-                            if (this.wait == 0) {
-                                return;
-                            }
-                            else {
-                                this.wait--;
-                                if (this.wait == 0) {
-                                    this.self.changeAction(2);
-                                }
-                            }
-                            // let dx = Math.abs(mouse.x - tile.sprite.position.x);
-                            // let dy = Math.abs(mouse.y - tile.sprite.position.y);
-                            // if (dx / tile.size.x + dy / tile.size.y < 1) {
-                            //     this.self.changeAction(2);
-                            // }
-                        }
-                        let tileSprite = new wesa.Sprite({
-                            object: wesa.assets.objectList[0],
-                            action: 0,
-                            team: 0,
-                            position: { x: x, y: y },
-                            scale: 0.5
-                        });
-                        tileSprite.setAI(tileAI);
-                        let tile = {
-                            sprite: tileSprite,
-                            size: { x: 25, y: 12.5 }
-                        };
-                        row.push(tile);
-                    }
-                    else {
-                        row.push(null);
-                    }
-                    x += this.dx;
-                    y += this.dy;
-                }
-                this.tiles.push(row);
-            }
-        };
-
-        TileMap.prototype.toScene = function (scene, layer) {
-            let it = TileMap.makeIterator(this);
-            let item = it.next();
-            while (!item.done) {
-                if (item.tile) {
-                    scene.addSpriteToLayer(layer, item.tile.sprite);
-                }
-                item = it.next();
-            }
-        };
-
-        TileMap.makeIterator = function (tm) {
-            var line = 1 - tm.size;
-            var row = line, col = 0;
-            return {
-                init: function () {
-                    line = 1 - tm.size;
-                    row = line;
-                    col = 0;
-                },
-                next: function () {
-                    if (col >= tm.size || row >= tm.size) {
-                        line++;
-                        row = line;
-                        col = 0;
-                    }
-                    if (line < tm.size) {
-                        while (row < 0) { row++; col++; }
-                        return { tile: tm.tiles[row++][col++], done: false };
-                    }
-                    else {
-                        return { tile: null, done: true };
-                    }
-                }
-            };
-        }
-
-        var tm = new TileMap();
-
-        var scenes = {
-            home: null,
-            projects: null,
-            about: null
-        };
-
         var canvas = document.getElementById('canvas');
-        var mouse = { x: 0, y: 0 };
+        var control = {
+            mouse: { x: 0, y: 0 }
+        };
 
         canvas.onmousemove = function(e) {
-            mouse.x = e.pageX - canvas.offsetLeft - canvas.width / 2;
-            mouse.y = canvas.height / 2 - (e.pageY - canvas.offsetTop);
-            console.log(mouse);
+            control.mouse.x = e.pageX - canvas.offsetLeft - canvas.width / 2;
+            control.mouse.y = canvas.height / 2 - (e.pageY - canvas.offsetTop);
+            // console.log(mouse);
         };
 
         // Initialize WESA
         wesa.core.init(canvas);
 
-        // Set background to white;
-        wesa.core.handle.gl.clearColor(1.0, 1.0, 1.0, 1.0);
-
         // Adding assets ready for loading
-        wesa.assets.source.spriteSheetUrlArray.push('./assets/tiles.png');
-        wesa.assets.source.objectJsonUrl = './assets/objects.json';
+        wesa.assets.source.spriteSheetUrlArray = [
+            './assets/tank.png',
+            './assets/cz.png'
+        ];
+        wesa.assets.source.objectJsonUrl = './assets/tank.json';
 
         // Load assets
         wesa.assets.load(function () {
-
-            scenes.home = new wesa.Scene('Home');
-            tm.init();
-            tm.toScene(scenes.home, 0);
-
-            var activeScene = scenes.home;
-
-            // Run the scene
+            var scene = new wesa.Scene('Scene');
+            scene.addSpriteToLayer(0, new wesa.Sprite({
+                object: wesa.assets.objectList[0],
+                action: 0,
+                team: 0,
+                position: { x: 0, y: -150 },
+                scale: 2
+            }));
+            scene.addSpriteToLayer(0, new wesa.Sprite({
+                object: wesa.assets.objectList[1],
+                action: 0,
+                team: 0,
+                position: { x: 0, y: 100 },
+                scale: 2
+            }));
             var animate = function () {
                 requestAnimationFrame(animate);
-                activeScene.update();
-                activeScene.render();
+                scene.update();
+                scene.render();
             }
             animate();
-
         });
 
     </script>

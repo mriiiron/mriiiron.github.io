@@ -1,0 +1,85 @@
+﻿{
+  "spriteSheetsMeta": [
+    {
+      "rowCount": 16,
+      "colCount": 16,
+      "cellWidth": 16,
+      "cellHeight": 16
+    },
+    {
+      "rowCount": 1,
+      "colCount": 1,
+      "cellWidth": 172,
+      "cellHeight": 68
+    }
+  ],
+  "objects": [
+    {
+      "type": 0,
+      "name": "Gold",
+      "frameLib": [
+        {
+          "spriteSheet": 0,
+          "cell": {
+            "row": 0,
+            "col": 0,
+            "rowSpan": 1,
+            "colSpan": 1
+          },
+          "center": {
+            "x": 8,
+            "y": 8
+          }
+        },
+        {
+          "spriteSheet": 0,
+          "cell": {
+            "row": 0,
+            "col": 1,
+            "rowSpan": 1,
+            "colSpan": 1
+          },
+          "center": {
+            "x": 8,
+            "y": 8
+          }
+        }
+      ],
+      "animList": [
+        {
+          "name": "Idle",
+          "next": 0,
+          "frameList": [0, 1],
+          "frameTimeList": [3, 3]
+        }
+      ]
+    },
+    {
+      "type": 0,
+      "name": "CZ Title",
+      "frameLib": [
+        {
+          "spriteSheet": 1,
+          "cell": {
+            "row": 0,
+            "col": 0,
+            "rowSpan": 1,
+            "colSpan": 1
+          },
+          "center": {
+            "x": 86,
+            "y": 34
+          }
+        }
+      ],
+      "animList": [
+        {
+          "name": "Idle",
+          "next": 0,
+          "frameList": [0],
+          "frameTimeList": [10]
+        }
+      ]
+    }
+  ]
+}
