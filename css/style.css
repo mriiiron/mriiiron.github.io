@@ -1,57 +1,16 @@
-@font-face {
-    font-family: 'SomepxNew';
-    src: url('./fonts/SomepxNew.eot'),
-         url('./fonts/SomepxNew.woff') format('woff'), /* Pretty Modern Browsers */
-         url('./fonts/SomepxNew.ttf')  format('truetype'), /* Safari, Android, iOS */
-         url('./fonts/SomepxNew.svg#svgFontName') format('svg'); /* Legacy iOS */
-}
-
 html, body {
     margin: 0;
     width: 100%;
     height: 100%;
-    background-color: #000;
-}
 
-a {
-    color: #e79c21;
-    text-decoration: none;
-}
-
-a:hover {
-    text-decoration: underline;
 }
 
 .wrapper {
-    display: flex;
-    width: 100%;
-    height: 100%;
-    font-family: 'SomepxNew', sans-serif;
-    font-size: 1.5em;
-    color: #e79c21;
-}
-
-.wrapper .centered {
-    margin: auto;
+    color: #3f0806;
     text-align: center;
 }
 
-#canvas {
-
-}
-
-.wrapper .centered p {
-    font-family: 'SomepxNew', sans-serif;
-}
-
-.wrapper .centered ul {
-    list-style-type: none;
-    display: flex;
-    padding: 0;
-    justify-content: space-around;
-}
-
-.wrapper .centered ul .disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
+.wrapper img {
+    height: 400px;
+    margin-top: 150px;
 }

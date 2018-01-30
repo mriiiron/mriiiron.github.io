@@ -1,0 +1,174 @@
+﻿{
+  "spriteSheetsMeta": [
+    {
+      "rowCount": 2,
+      "colCount": 5,
+      "cellWidth": 100,
+      "cellHeight": 65
+    }
+  ],
+  "objects": [
+    {
+      "type": 0,
+      "name": "Tile",
+      "frameLib": [
+        {
+          "spriteSheet": 0,
+          "cell": {
+            "row": 0,
+            "col": 0,
+            "rowSpan": 1,
+            "colSpan": 1
+          },
+          "center": {
+            "x": 50,
+            "y": 40
+          }
+        },
+        {
+          "spriteSheet": 0,
+          "cell": {
+            "row": 0,
+            "col": 1,
+            "rowSpan": 1,
+            "colSpan": 1
+          },
+          "center": {
+            "x": 50,
+            "y": 40
+          }
+        },
+        {
+          "spriteSheet": 0,
+          "cell": {
+            "row": 0,
+            "col": 2,
+            "rowSpan": 1,
+            "colSpan": 1
+          },
+          "center": {
+            "x": 50,
+            "y": 40
+          }
+        },
+        {
+          "spriteSheet": 0,
+          "cell": {
+            "row": 0,
+            "col": 3,
+            "rowSpan": 1,
+            "colSpan": 1
+          },
+          "center": {
+            "x": 50,
+            "y": 40
+          }
+        },
+        {
+          "spriteSheet": 0,
+          "cell": {
+            "row": 0,
+            "col": 4,
+            "rowSpan": 1,
+            "colSpan": 1
+          },
+          "center": {
+            "x": 50,
+            "y": 40
+          }
+        },
+        {
+          "spriteSheet": 0,
+          "cell": {
+            "row": 1,
+            "col": 0,
+            "rowSpan": 1,
+            "colSpan": 1
+          },
+          "center": {
+            "x": 50,
+            "y": 40
+          }
+        },
+        {
+          "spriteSheet": 0,
+          "cell": {
+            "row": 1,
+            "col": 1,
+            "rowSpan": 1,
+            "colSpan": 1
+          },
+          "center": {
+            "x": 50,
+            "y": 40
+          }
+        },
+        {
+          "spriteSheet": 0,
+          "cell": {
+            "row": 1,
+            "col": 2,
+            "rowSpan": 1,
+            "colSpan": 1
+          },
+          "center": {
+            "x": 50,
+            "y": 40
+          }
+        },
+        {
+          "spriteSheet": 0,
+          "cell": {
+            "row": 1,
+            "col": 3,
+            "rowSpan": 1,
+            "colSpan": 1
+          },
+          "center": {
+            "x": 50,
+            "y": 40
+          }
+        },
+        {
+          "spriteSheet": 0,
+          "cell": {
+            "row": 1,
+            "col": 4,
+            "rowSpan": 1,
+            "colSpan": 1
+          },
+          "center": {
+            "x": 50,
+            "y": 40
+          }
+        }
+      ],
+      "animList": [
+        {
+          "name": "Hidden",
+          "next": 0,
+          "frameList": [null],
+          "frameTimeList": [10]
+        },
+        {
+          "name": "Grass_Idle",
+          "next": 1,
+          "frameList": [0],
+          "frameTimeList": [10]
+        },
+        {
+          "name": "Grass_FadeIn",
+          "next": 1,
+          "frameList": [4, 3, 2, 1],
+          "frameTimeList": [3, 3, 3, 3]
+        },
+        {
+          "name": "Dirt_Idle",
+          "next": 3,
+          "frameList": [5],
+          "frameTimeList": [10]
+        }
+      ]
+    }
+  ]
+}
