@@ -2,89 +2,44 @@
 <html>
 
 <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+    <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:400,700" rel="stylesheet">
+    <link href="./css/style.css" rel="stylesheet" type="text/css" />
     <title>mriiiron</title>
-    <link rel="stylesheet" type="text/css" href="./css/style.css">
-    <script defer src="https://use.fontawesome.com/releases/v5.0.6/js/all.js"></script>
 </head>
 
 <body>
-    <header>
-        <div class="header-image"></div>
-        <div class="title">Caiyi Zhong aka mriiiron</div>
-    </header>
-    <nav style="top:520px;">
-        <a data-target="projects" href="#">Projects</a>
-        <a data-target="blog" href="#">Blog</a>
-        <a data-target="resume" href="#">Resume</a>
-        <a data-target="links" href="#">Links</a>
-    </nav>
-    <main>
-        <div class="tab-leading"><a class="back" href="#"><i class="fas fa-arrow-left"></i> Back</a></div>
-        <div id="projects" class="tab">
-            <section>
-                <h2><a href="http://caiyi.us/wesa" target="_blank"><i class="fas fa-chess-pawn"></i> Wesa.js</a></h2>
-                <p>A simple and light-weighted engine of sprite animations developed using WebGL.</p>
-            </section>
-            <section>
-                <h2><a href="http://caiyi.us/lyrica" target="_blank"><i class="fas fa-chess-pawn"></i> Lyrica</a></h2>
-                <p>My personal music box. Featuring lyrics display and playlist management.</p>
-            </section>
-        </div>
-        <div id="blog" class="tab">
-            <section>
-                <h2>Under Construction</h2>
-                <p>Coming soon!</p>
-            </section>
-        </div>
-        <div id="resume" class="tab">
-            <section>
-                <h2>Under Construction</h2>
-                <p>Coming soon!</p>
-            </section>
-        </div>
-        <div id="links" class="tab">
-            <section>
-                <h2><a href="https://github.com/mriiiron" target="_blank"><i class="fab fa-github"></i></a></h2>
-                <p>Github</p>
-            </section>
-            <section>
-                <h2><a href="https://www.instagram.com/mriiiron/" target="_blank"><i class="fab fa-instagram"></i></a></h2>
-                <p>Instagram</p>
-            </section>
-        </div>
-    </main>
+    <div id="nav">
+        <h1>CAIYI ZHONG</h1>
+        <section>
+            <p>Coder, enthusiasitc in (mainly) Web</p>
+            <p>Full stack developer</p>
+            <p>Loves music, gaming, and writing</p>
+        </section>
+        <h2>Projects</h2>
+        <section>
+            <ul>
+                <li><a href="http://caiyi.us/lyrica/" target="_blank">lyrica (music player)</a></li>
+                <li><a href="http://caiyi.us/wesa/" target="_blank">wesa.js (game engine)</a></li>
+                <li><a href="https://github.com/mriiiron/napa" target="_blank">napa.js (blog engine)</a></li>
+            </ul>
+        </section>
+        <h2>Recent Posts</h2>
+        <section>
+            <ul>
+                <li>&lt;Blog under construction&gt;</li>
+            </ul>
+        </section>
+        <section>
+            <ul class="horizontal">
+                <li>1</li>
+                <li>2</li>
+                <li>3</li>
+                <li>4</li>
+            </ul>
+        </section>
+    </div>
+    <!-- <div id="blog"></div> -->
 </body>
-
-
-<script src="http://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
-<script>
-    $(document).ready(function () {
-
-        let $header = $('header'), $nav = $('nav'), $main = $('main');
-
-        $nav.children('a').click(function () {
-            let target = $(this).data('target');
-            $main.find('.tab').removeClass('active');
-            if ($main.hasClass('tab-showing')) {
-                $('#' + target).addClass('active');
-            }
-            else {
-                $header.addClass('faded');
-                $nav.animate({ top: 0 }, 500, function () {
-                    $main.addClass('tab-showing');
-                    $('#' + target).addClass('active');
-                });
-            }
-        });
-
-        $main.find('a.back').click(function () {
-            $main.removeClass('tab-showing').find('.tab').removeClass('active');
-            $header.removeClass('faded');
-            $nav.animate({ top: '520px' }, 500);
-        });
-
-    });
-</script>
 
 </html>
