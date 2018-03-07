@@ -1,4 +1,5 @@
 html, body {
+    height: 100%;
     margin: 0;
     font-family: 'Open Sans', sans-serif;
     color: #666;
@@ -6,7 +7,19 @@ html, body {
 
 #nav {
     text-align: center;
-    padding-top: 80px;
+    padding-top: 50px;
+    white-space: nowrap;
+    position: fixed;
+    width: 100%;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    -webkit-transition: width .5s;
+    transition: width .5s;
+}
+
+#nav.sided {
+    width: 400px;
 }
 
 #nav h1 {
@@ -16,6 +29,12 @@ html, body {
 
 #nav h2 {
     margin: 40px 0 0 0;
+    letter-spacing: 2px;
+}
+
+#nav h5 {
+    margin: 10px 0 0 0;
+    font-weight: normal;
     letter-spacing: 2px;
 }
 
@@ -51,6 +70,10 @@ html, body {
 
 #nav a:hover {
     color: #c27c78
+}
+
+#nav ul.horizontal {
+    margin: 10px 0 0 0;
 }
 
 #nav ul.horizontal li {
