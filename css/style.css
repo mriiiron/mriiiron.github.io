@@ -5,78 +5,66 @@ html, body {
     color: #666;
 }
 
-#nav {
+.wrapper {
+    margin: 50px auto 0 auto;
     text-align: center;
-    padding-top: 50px;
-    white-space: nowrap;
-    position: fixed;
-    width: 100%;
-    right: 0;
-    top: 0;
-    bottom: 0;
-    -webkit-transition: width .5s;
-    transition: width .5s;
 }
 
-#nav.sided {
-    width: 400px;
-}
-
-#nav h1 {
+.wrapper h1 {
     margin: 40px 0 0 0;
     letter-spacing: 5px;
 }
 
-#nav h2 {
+.wrapper h2 {
     margin: 40px 0 0 0;
     letter-spacing: 2px;
 }
 
-#nav h5 {
+.wrapper h5 {
     margin: 10px 0 0 0;
     font-weight: normal;
     letter-spacing: 2px;
 }
 
-#nav section {
+.wrapper section {
     margin-top: 30px;
 }
 
-#nav section.extra-margin {
+.wrapper section.extra-margin {
     margin-top: 60px;
 }
 
-#nav p {
+.wrapper p {
     margin: 5px 0;
     letter-spacing: 1px;
 }
 
-#nav ul {
+.wrapper ul {
     padding: 0;
     list-style: none;
 }
 
-#nav li {
+.wrapper li {
     margin: 5px 0;
     letter-spacing: 1px;
 }
 
-#nav a {
+.wrapper a {
     text-decoration: none;
     color: #666;
     -webkit-transition: color 0.4s;
     transition: color 0.4s;
 }
 
-#nav a:hover {
+.wrapper a:hover {
     color: #c27c78
 }
 
-#nav ul.horizontal {
+.wrapper ul.horizontal {
     margin: 10px 0 0 0;
 }
 
-#nav ul.horizontal li {
+.wrapper ul.horizontal li {
     display: inline-block;
     font-size: 1.5em;
     margin: 0px 5px;
