@@ -4,8 +4,7 @@
 }
 
 /* Color Palette:
-    Napa Green: #e9f2d2 #c4d39e #9eb16f #7f934c #61772c
-    Main Text: #666 #eee
+    Grayscale: #eee #bbb #999 #666 #333
 */
 
 html, body {
@@ -22,7 +21,7 @@ body {
 
 a {
     text-decoration: none;
-    color: #9eb16f;
+    color: #999;
 }
 
 a:hover {
@@ -30,13 +29,26 @@ a:hover {
 }
 
 .napa-header {
-    background-color: #61772c;
-    color: #e9f2d2;
+    background-color: #333;
+    color: #eee;
     flex: 0 0 60px;
 }
 
+.napa-header .napa-title {
+    display: flex;
+}
+
+.napa-header .napa-title .napa-logo {
+    height: 50px;
+    width: 50px;
+    background-image: url(./temp-logo.png);
+}
+
+.napa-header .napa-title .napa-title-text {
+}
+
 .napa-header a {
-    color: #e9f2d2;
+    color: #eee;
 }
 
 .napa-header a:hover {
@@ -54,6 +66,7 @@ a:hover {
 
 .napa-footer {
     flex: 0 0 auto;
+    border-top: 1px solid #eee;
 }
 
 .napa-footer-inner {
@@ -62,7 +75,7 @@ a:hover {
     margin: 0 auto;
     padding: 10px 0;
     text-align: center;
-    color: #61772c;
+    color: #333;
 }
 
 .napa-nav ul {
@@ -86,22 +99,39 @@ a:hover {
     margin: 50px auto 0 auto;
     flex: 1 0 auto;
 }
+
 .napa-post {
     margin-bottom: 50px;
     padding-bottom: 25px;
-    border-bottom: 1px solid #e9f2d2;
+    border-bottom: 1px solid #eee;
 }
 
-.napa-post.error {
-    color: red;
+.napa-post:last-child {
+    border-bottom: none;
 }
 
 .napa-post-title {
     letter-spacing: 1px;
 }
 
-.napa-post h2, .napa-post h3, .napa-post h4, .napa-post h5, .napa-post h6 {
+.napa-post h1, .napa-post h2, .napa-post h3, .napa-post h4, .napa-post h5, .napa-post h6 {
     font-weight: normal;
+}
+
+.napa-post h1 {
+    font-size: 1.75em;
+}
+
+.napa-post h2 {
+    margin-top: 40px;
+}
+
+.napa-post h3 {
+    margin-top: 30px;
+}
+
+.napa-post h4, .napa-post h5, .napa-post h6 {
+    margin: 10px 0 5px 0;
 }
 
 .napa-post pre {
@@ -109,4 +139,31 @@ a:hover {
     color: #eee;
     padding: 10px 20px;
     overflow-x: auto;
+}
+
+.napa-post pre code {
+    background-color: #333;
+    padding: 0;
+}
+
+.napa-post code {
+    background-color: #eee;
+    padding: 2px 4px;
+}
+
+.napa-post blockquote {
+    border-left: 3px solid #bbb;
+    margin: 25px 10px;
+    padding: 7px 10px;
+    color: #333
+}
+
+.napa-post blockquote p {
+    margin: 0;
+}
+
+.napa-post h4 + blockquote {
+    border-left: none;
+    margin: 0 40px;
+    color: #333;
 }
