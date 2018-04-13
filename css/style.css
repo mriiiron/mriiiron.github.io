@@ -1,12 +1,4 @@
 @font-face {
-    font-family: 'Comic Neue Angular Light';
-    src: url("./fonts/ComicNeue-Angular-Light.woff2") format("woff2"),
-         url("./fonts/ComicNeue-Angular-Light.woff") format("woff"),
-         url("./fonts/ComicNeue-Angular-Light.ttf") format("ttf"),
-         url("./fonts/ComicNeue-Angular-Light.eot") format("eot");
-}
-
-@font-face {
     font-family: 'Comic Neue Angular';
     src: url("./fonts/ComicNeue-Angular-Regular.woff2") format("woff2"),
          url("./fonts/ComicNeue-Angular-Regular.woff") format("woff"),
