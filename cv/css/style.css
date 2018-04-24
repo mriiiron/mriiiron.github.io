@@ -1,0 +1,94 @@
+@font-face {
+    font-family: 'Lato';
+    src: url(http://caiyi.us/vault/fonts/Lato/Lato-Regular.ttf);
+}
+
+
+html, body {
+    margin: 0;
+    height: 100%;
+    background-color: #eee;
+    font-family: 'Lato', 'Microsoft YaHei', sans-serif;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+}
+
+.inner-wrapper {
+    display: flex;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+header {
+    flex: 0 0 350px;
+    background-color: #333;
+    color: #ddd;
+}
+
+h1, h2, h3 {
+    font-family: 'Roboto Condensed', 'Microsoft YaHei', sans-serif;
+    font-weight: normal;
+    margin: 0;
+}
+
+h1 {
+    letter-spacing: 3px;
+    font-size: 3.5em;
+    margin-bottom: 20px;
+}
+
+h2 {
+    letter-spacing: 2px;
+    margin-bottom: 10px;
+}
+
+header p.summary {
+    font-style: italic;
+    margin: 0;
+}
+
+main {
+    flex: 1 0 auto;
+}
+
+section {
+    margin-bottom: 50px;
+}
+
+.left section {
+    max-width: 350px;
+    margin-left: auto;
+}
+
+.right section {
+    max-width: 650px;
+}
+
+.left {
+    flex: 0 0 35%;
+    text-align: right;
+    padding: 0 50px;
+    box-sizing: border-box;
+}
+
+.right {
+    flex: 0 0 65%;
+    padding: 0 50px;
+    box-sizing: border-box;
+}
+
+main .left, main .right {
+    padding-top: 50px;
+}
+
+header .inner-wrapper {
+    height: 100%;
+}
+
+header .right {
+    display: flex;
+    align-items: center;
+}
