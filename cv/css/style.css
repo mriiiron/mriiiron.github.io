@@ -4,11 +4,18 @@
 }
 
 
+:root {
+    --main-color: #a52d1a;
+}
+
+
 html, body {
     margin: 0;
     height: 100%;
     background-color: #eee;
+    color: #333;
     font-family: 'Lato', 'Microsoft YaHei', sans-serif;
+    line-height: 25px;
 }
 
 body {
@@ -42,7 +49,7 @@ h1 {
 
 h2 {
     letter-spacing: 2px;
-    margin-bottom: 10px;
+    margin-bottom: 20px;
 }
 
 .left {
@@ -56,6 +63,16 @@ h2 {
     flex: 0 0 65%;
     padding: 0 50px;
     box-sizing: border-box;
+}
+
+a {
+    text-decoration: none;
+    transition: color 0.25s;
+    color: var(--main-color);
+}
+
+a:hover {
+    text-decoration: underline;
 }
 
 header .inner-wrapper {
@@ -104,12 +121,62 @@ main ul {
     padding: 0;
 }
 
-main ul li {
-    margin-bottom: 5px;
-}
-
-main ul.horizontal li {
+main ul.horizontal-icons li {
     display: inline-block;
     font-size: 1.5em;
     margin-left: 5px;
+}
+
+main ul.horizontal-icons a {
+    color: #333;
+}
+
+main ul.horizontal-icons a:hover {
+    color: var(--main-color);
+}
+
+
+section.itemized .item-wrapper {
+    padding-left: 30px;
+    border-left: 2px solid #ccc;
+}
+
+section.itemized .item-wrapper .item {
+    margin-bottom: 30px;
+    position: relative;
+}
+
+section.itemized .item-wrapper .item:before {
+    content: '';
+    position: absolute;
+    top: 6px;
+    left: -35px;
+    background-color: #eee;
+    border-radius: 4px;
+    width: 8px;
+    height: 8px;
+    box-shadow: 0 0 0 6px #ccc;
+}
+
+section.itemized .item-wrapper .item .item-title {
+    font-size: 1.25em;
+}
+
+section.itemized .item-wrapper .item .item-subtitile {
+    color: #888;
+}
+
+section.itemized .item-wrapper .item .item-subtitle-2 {
+    font-size: 0.8em;
+    color: #888;
+    margin-bottom: 15px;
+}
+
+section.itemized .item-wrapper .item .item-content {
+    margin-bottom: 15px;
+}
+
+section.itemized .item-wrapper .item .item-footer {
+    font-size: 0.8em;
+    color: #888;
 }
