@@ -45,28 +45,6 @@ h2 {
     margin-bottom: 10px;
 }
 
-header p.summary {
-    font-style: italic;
-    margin: 0;
-}
-
-main {
-    flex: 1 0 auto;
-}
-
-section {
-    margin-bottom: 50px;
-}
-
-.left section {
-    max-width: 350px;
-    margin-left: auto;
-}
-
-.right section {
-    max-width: 650px;
-}
-
 .left {
     flex: 0 0 35%;
     text-align: right;
@@ -80,15 +58,60 @@ section {
     box-sizing: border-box;
 }
 
-main .left, main .right {
-    padding-top: 50px;
-}
-
 header .inner-wrapper {
     height: 100%;
+}
+
+header p.summary {
+    font-style: italic;
+    margin: 0;
+}
+
+header .left {
+    display: flex;
+    flex-direction: row-reverse;
+    align-items: center;
 }
 
 header .right {
     display: flex;
     align-items: center;
+}
+
+header .left img {
+    border-radius: 50%;
+    height: 200px;
+}
+
+main {
+    flex: 1 0 auto;
+}
+
+main section {
+    margin-bottom: 50px;
+}
+
+main ul.horizontal {
+    padding: 0;
+    margin: 0;
+    list-style: none;
+}
+
+main ul.horizontal li {
+    display: inline-block;
+    font-size: 1.5em;
+    margin-left: 5px;
+}
+
+main .left, main .right {
+    padding-top: 50px;
+}
+
+main .left section {
+    max-width: 350px;
+    margin-left: auto;
+}
+
+main .right section {
+    max-width: 650px;
 }
