@@ -5,7 +5,7 @@
 
 
 :root {
-    --main-color: #a52d1a;
+    --main-color: #4787a7;
 }
 
 
@@ -93,6 +93,15 @@ header .right {
 header .left img {
     border-radius: 50%;
     height: 200px;
+}
+
+header h1 a {
+    color: #ddd;
+}
+
+header h1 a:hover {
+    color: var(--main-color);
+    text-decoration: none;
 }
 
 main {
