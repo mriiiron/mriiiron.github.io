@@ -1,81 +1,39 @@
-@font-face {
-    font-family: 'Comic Neue Angular';
-    src: url("./fonts/ComicNeue-Angular-Regular.woff2") format("woff2"),
-         url("./fonts/ComicNeue-Angular-Regular.woff") format("woff"),
-         url("./fonts/ComicNeue-Angular-Regular.ttf") format("ttf"),
-         url("./fonts/ComicNeue-Angular-Regular.eot") format("eot");
-}
-
-
 html, body {
     height: 100%;
     margin: 0;
-    font-family: 'Comic Neue Angular', sans-serif;
+    font-family: 'Helvetica', sans-serif;
     color: #666;
 }
 
-.wrapper {
-    margin: 0 auto;
-    padding-top: 50px;
-    text-align: center;
+body {
+    display: flex;
 }
 
-.wrapper h1 {
+.bunny {
+    margin: auto;
+    padding-bottom: 0;
+}
+
+.bunny img {
+    height: 600px;
+}
+
+ul.nav {
     margin: 0;
-    letter-spacing: 5px;
-}
-
-.wrapper h2 {
-    margin: 40px 0 0 0;
-    letter-spacing: 2px;
-}
-
-.wrapper h5 {
-    margin: 10px 0 0 0;
-    font-weight: normal;
-    letter-spacing: 2px;
-}
-
-.wrapper section {
-    margin-top: 30px;
-}
-
-.wrapper section.extra-margin {
-    margin-top: 60px;
-}
-
-.wrapper p {
-    margin: 5px 0;
-    letter-spacing: 1px;
-}
-
-.wrapper ul {
     padding: 0;
     list-style: none;
+    height: 200px;
+    display: flex;
+    justify-content: space-evenly;
+    font-family: 'Amatic SC', cursive;
+    font-size: 40px;
 }
 
-.wrapper li {
-    margin: 5px 0;
-    letter-spacing: 1px;
-}
-
-.wrapper a {
+ul.nav a {
     text-decoration: none;
-    color: #7b3230;
-    -webkit-transition: color 0.4s;
-    transition: color 0.4s;
+    color: #966551;
 }
 
-.wrapper a:hover {
-    color: #c27c78
-}
-
-.wrapper ul.horizontal {
-    margin: 10px 0 0 0;
-}
-
-.wrapper ul.horizontal li {
-    display: inline-block;
-    font-size: 1.5em;
-    margin: 0px 5px;
+ul.nav a:hover {
+    color: #e0b7a1;
 }
