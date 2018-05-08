@@ -77,6 +77,35 @@ a:hover {
 
 header .inner-wrapper {
     height: 100%;
+    position: relative;
+}
+
+header .inner-wrapper ul.lang-switch {
+    position: absolute;
+    right: 50px;
+}
+
+header .inner-wrapper ul.lang-switch {
+    list-style: none;
+    padding: 0;
+}
+
+header .inner-wrapper ul.lang-switch li {
+    display: inline-block;
+    margin-left: 15px;
+}
+
+header .inner-wrapper ul.lang-switch li.active a {
+    color: #ddd;
+}
+
+header .inner-wrapper ul.lang-switch a {
+    color: #666;
+}
+
+header .inner-wrapper ul.lang-switch a:hover {
+    color: #ddd;
+    text-decoration: none;
 }
 
 header .left {
@@ -113,52 +142,32 @@ main .left, main .right {
 }
 
 main .left section {
-    max-width: 350px;
-    margin-left: auto;
+
 }
 
 main .right section {
-    max-width: 650px;
+
 }
 
 section {
     margin-bottom: 50px;
 }
 
-main dl {
+dl {
     margin: 0;
 }
 
-main dl dt {
+dl dt {
 
 }
 
-main dl dd {
+dl dd {
 
 }
 
-main ul.clean {
+ul.clean {
     list-style: none;
     padding: 0;
-}
-
-main ul.horizontal-icons {
-    list-style: none;
-    padding: 0;
-}
-
-main ul.horizontal-icons li {
-    display: inline-block;
-    font-size: 1.5em;
-    margin-left: 5px;
-}
-
-main ul.horizontal-icons a {
-    color: #333;
-}
-
-main ul.horizontal-icons a:hover {
-    color: var(--main-color);
 }
 
 
