@@ -44,7 +44,7 @@ h1, h2, h3 {
 h1 {
     letter-spacing: 3px;
     font-size: 3.5em;
-    margin-bottom: 20px;
+    margin-bottom: 30px;
 }
 
 h2 {
@@ -123,6 +123,18 @@ main .right section {
 
 section {
     margin-bottom: 50px;
+}
+
+main dl {
+    margin: 0;
+}
+
+main dl dt {
+
+}
+
+main dl dd {
+
 }
 
 main ul.clean {
