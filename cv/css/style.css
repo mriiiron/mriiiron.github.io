@@ -15,7 +15,6 @@ html, body {
     background-color: #eee;
     color: #333;
     font-family: 'Lato', 'Microsoft YaHei', sans-serif;
-    line-height: 25px;
 }
 
 body {
@@ -44,7 +43,6 @@ h1, h2, h3 {
 h1 {
     letter-spacing: 3px;
     font-size: 3.5em;
-    margin-bottom: 30px;
 }
 
 h2 {
@@ -135,6 +133,7 @@ header h1 a:hover {
 
 main {
     flex: 1 0 auto;
+    line-height: 25px;
 }
 
 main .left, main .right {
@@ -151,6 +150,10 @@ main .right section {
 
 section {
     margin-bottom: 50px;
+}
+
+ul.contacts .contact-item-icon::before {
+    content: '\00a0<\00a0';
 }
 
 dl {
@@ -227,4 +230,57 @@ section.itemized-simple .item .item-title {
 section.itemized-simple .item .item-subtitle {
     font-size: 0.8em;
     color: #888;
+}
+
+
+@media print {
+    .inner-wrapper {
+        display: block;
+    }
+    header {
+        flex: 0 0 auto;
+        margin-bottom: 50px;
+    }
+    header .left, header .lang-switch {
+        display: none;
+    }
+    main .left, main .right {
+        padding-top: 0;
+    }
+    main .left {
+        text-align: left;
+    }
+    main section {
+        margin-bottom: 25px;
+    }
+    ul.contacts {
+        columns: 3;
+    }
+    ul.contacts .contact-item-icon {
+        float: left;
+    }
+    ul.contacts .contact-item-icon::before {
+        content: '';
+    }
+    ul.contacts .contact-item-icon::after {
+        content: '\00a0:\00a0\00a0';
+    }
+    ul.skills li {
+        display: inline-block;
+    }
+    ul.skills li::after {
+        content: ',';
+    }
+    ul.skills li:last-child::after {
+        content: '';
+    }
+    .education {
+        columns: 2;
+    }
+    section.itemized-simple .item {
+        margin-bottom: 0;
+    }
+    section.back-to-top {
+        display: none;
+    }
 }
