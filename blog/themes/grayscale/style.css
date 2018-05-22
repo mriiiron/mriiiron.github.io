@@ -1,11 +1,26 @@
 @font-face {
     font-family: "Lato";
-    src: url("Lato-Regular.ttf");
+    src: url("http://caiyi.us/vault/fonts/Lato/Lato-Regular.ttf");
 }
 
-/* Color Palette:
-    Grayscale: #eee #bbb #999 #666 #333
-*/
+@font-face {
+    font-family: "Calligraffitti";
+    src: url("http://caiyi.us/vault/fonts/Calligraffitti/Calligraffitti-Regular.ttf");
+}
+
+
+/* Color Palette: http://paletton.com/#uid=14w0u0k6qHZ0NYI35RWaHwbg1qK */
+:root {
+    --c-darker: #232322;
+    --c-dark: #5b5b5b;
+    --c-medium: #878787;
+    --c-light: #b0b0b0;
+    --c-lighter: #dfe0df;
+    --c-main: #127eb2;
+    --c-main-light: #59a5ca;
+    --c-text: #555;
+}
+
 
 html, body {
     height: 100%;
@@ -16,46 +31,49 @@ body {
     margin: 0;
     display: flex;
     flex-direction: column;
-    color: #666;
+    color: var(--c-text);
 }
 
 a {
     text-decoration: none;
-    color: #999;
+    color: var(--c-main);
+    transition: color .25s;
 }
 
 a:hover {
-    text-decoration: underline;
+    color: var(--c-main-light);
 }
 
-.napa-header {
-    background-color: #333;
-    color: #eee;
+.salvia-header {
+    background-color: var(--c-darker);
+    color: var(--c-light);
     flex: 0 0 60px;
 }
 
-.napa-header .napa-title {
-    display: flex;
+.salvia-header .salvia-title {
+    font-family: 'Calligraffitti';
+    font-size: 1.5em;
+    letter-spacing: 2px;
 }
 
-.napa-header .napa-title .napa-logo {
+.salvia-header .salvia-title .salvia-logo {
     height: 50px;
     width: 50px;
     background-image: url(./temp-logo.png);
 }
 
-.napa-header .napa-title .napa-title-text {
+.salvia-header .salvia-title .salvia-title-text {
 }
 
-.napa-header a {
-    color: #eee;
+.salvia-header a {
+    color: var(--c-light);
 }
 
-.napa-header a:hover {
-    text-decoration: underline;
+.salvia-header a:hover {
+    color: var(--c-lighter);
 }
 
-.napa-header-inner {
+.salvia-header-inner {
     width: 900px;
     height: 100%;
     margin: 0 auto;
@@ -64,106 +82,108 @@ a:hover {
     justify-content: space-between;
 }
 
-.napa-footer {
+.salvia-footer {
     flex: 0 0 auto;
-    border-top: 1px solid #eee;
+    border-top: 1px solid var(--c-lighter);
 }
 
-.napa-footer-inner {
+.salvia-footer-inner {
     width: 900px;
     height: 100%;
     margin: 0 auto;
     padding: 10px 0;
     text-align: center;
-    color: #333;
 }
 
-.napa-nav ul {
+.salvia-nav ul {
     list-style: none;
     margin: 0;
     padding: 0;
 }
 
-.napa-nav ul li {
+.salvia-nav ul li {
     display: inline-block;
     padding: 0 10px;
 }
 
-.napa-title {
-    font-size: 1.5em;
-    letter-spacing: 2px;
-}
-
-.napa-container {
+.salvia-container {
     width: 900px;
-    margin: 50px auto 0 auto;
+    margin: 120px auto 0 auto;
     flex: 1 0 auto;
 }
 
-.napa-post {
-    margin-bottom: 50px;
+.salvia-post {
+    margin-bottom: 80px;
     padding-bottom: 25px;
-    border-bottom: 1px solid #eee;
+    border-bottom: 1px solid var(--c-lighter);
 }
 
-.napa-post:last-child {
+.salvia-post:last-child {
     border-bottom: none;
 }
 
-.napa-post-title {
+.salvia-post-title {
     letter-spacing: 1px;
 }
 
-.napa-post h1, .napa-post h2, .napa-post h3, .napa-post h4, .napa-post h5, .napa-post h6 {
+.salvia-post-title a {
+    color: inherit;
+}
+
+.salvia-post h1, .salvia-post h2, .salvia-post h3, .salvia-post h4, .salvia-post h5, .salvia-post h6 {
     font-weight: normal;
 }
 
-.napa-post h1 {
+.salvia-post h1 {
     font-size: 1.75em;
 }
 
-.napa-post h2 {
+.salvia-post h2 {
     margin-top: 40px;
 }
 
-.napa-post h3 {
+.salvia-post h3 {
     margin-top: 30px;
 }
 
-.napa-post h4, .napa-post h5, .napa-post h6 {
+.salvia-post h4, .salvia-post h5, .salvia-post h6 {
     margin: 10px 0 5px 0;
 }
 
-.napa-post pre {
+.salvia-post pre {
     background-color: #333;
     color: #eee;
     padding: 10px 20px;
     overflow-x: auto;
 }
 
-.napa-post pre code {
+.salvia-post pre code {
     background-color: #333;
     padding: 0;
 }
 
-.napa-post code {
+.salvia-post code {
     background-color: #eee;
     padding: 2px 4px;
 }
 
-.napa-post blockquote {
-    border-left: 3px solid #bbb;
+.salvia-post blockquote {
+    border-left: 3px solid var(--c-light);
     margin: 25px 10px;
     padding: 7px 10px;
-    color: #333
+    color: var(--c-darker)
 }
 
-.napa-post blockquote p {
+.salvia-post blockquote p {
     margin: 0;
 }
 
-.napa-post h4 + blockquote {
+.salvia-post h4 + blockquote {
     border-left: none;
     margin: 0 40px;
     color: #333;
+}
+
+.salvia-post img {
+    max-width: 600px;
 }

@@ -1,0 +1,11 @@
+{
+    "blog": {
+        "title": "mriiiron's blog",
+        "theme": "grayscale"
+    },
+    "nav": [
+        { "text": "首页", "href": "." },
+        { "text": "归档", "href": "./archives.html" },
+        { "text": "友链", "href": "./links.html" }
+    ]
+}
