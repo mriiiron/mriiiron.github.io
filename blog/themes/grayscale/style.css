@@ -203,3 +203,11 @@ a:hover {
 .salvia-post .salvia-post-content {
     font-size: 0.9em;
 }
+
+.salvia-post-list li {
+    margin-bottom: 10px;
+}
+
+.salvia-post-list small {
+    margin-right: 10px;
+}

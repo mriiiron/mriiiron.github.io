@@ -10,7 +10,7 @@
 
     <header id="header"></header>
     <main class="salvia-container">
-        <p>本页施工中……</p>
+        <div id="post-list"></div>
     </main>
     <footer id="footer"></footer>
 
@@ -19,6 +19,7 @@
         let blog = new Salvia({
             el: {
                 header: '#header',
+                postList: '#post-list',
                 footer: '#footer'
             }
         });
