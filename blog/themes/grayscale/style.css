@@ -37,7 +37,6 @@ body {
 a {
     text-decoration: none;
     color: var(--c-main);
-    transition: color .25s;
 }
 
 a:hover {
@@ -186,4 +185,8 @@ a:hover {
 
 .salvia-post img {
     max-width: 600px;
+}
+
+.salvia-post .salvia-post-content {
+    font-size: 0.9em;
 }
