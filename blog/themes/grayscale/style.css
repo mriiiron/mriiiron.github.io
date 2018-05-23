@@ -19,6 +19,7 @@
     --c-main: #127eb2;
     --c-main-light: #59a5ca;
     --c-text: #555;
+    --c-text-light: #aaa;
 }
 
 
@@ -185,6 +186,18 @@ a:hover {
 
 .salvia-post img {
     max-width: 600px;
+}
+
+.salvia-post .salvia-post-meta {
+    margin: 0;
+    padding: 0;
+    font-size: 0.9em;
+    color: var(--c-text-light);
+}
+
+.salvia-post .salvia-post-meta li {
+    display: inline-block;
+    margin-right: 20px;
 }
 
 .salvia-post .salvia-post-content {

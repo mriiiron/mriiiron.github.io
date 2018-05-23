@@ -14,6 +14,6 @@ date:       2000-01-01
 
 如果你对 Salvia 感兴趣, 愿意用它建立自己的博客，我会非常开心^^ 这个项目目前只有我一人维护，进度缓慢，很多重要的功能还未实现。如果你需要什么功能，请在 GitHub 里提交 Issue. 我保证每一个意见和建议我都会仔细对待的。
 
-这里是 Salvia 的[项目主页](http://caiyi.us/salvia)。
+这里是 Salvia 的[项目主页](http://caiyi.us/salvia)和 [GitHub 地址](https://github.com/mriiiron/salvia)。
 
 再次感谢你的阅读。
