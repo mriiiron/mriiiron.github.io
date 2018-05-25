@@ -24,7 +24,7 @@ ul.nav {
     list-style: none;
     height: 200px;
     display: flex;
-    justify-content: space-evenly;
+    justify-content: space-around;
     font-family: 'Amatic SC', cursive;
     font-size: 40px;
 }
