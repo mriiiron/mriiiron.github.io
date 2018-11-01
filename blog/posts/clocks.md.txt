@@ -2,7 +2,8 @@
 title:      时与光
 author:     mriiiron
 date:       2017-09-27
-category:   摄影
+category:   生活
+tags:       摄影
 ```
 
 ![clocks](https://i.imgur.com/NzVMC89.jpg)

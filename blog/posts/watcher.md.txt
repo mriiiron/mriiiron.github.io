@@ -2,7 +2,8 @@
 title:      人间观察家
 author:     mriiiron
 date:       2017-10-17
-category:   摄影
+category:   生活
+tags:       摄影
 ```
 
 ![visitor](https://i.imgur.com/A78Z051.jpg)
