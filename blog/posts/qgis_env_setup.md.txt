@@ -1,7 +1,7 @@
 ```
 title:      Windows 下 QGIS C++ 二次开发环境搭建
 author:     mriiiron
-date:       2018-11-01
+date:       2019-02-26
 category:   技术
 tags:       QGIS, C++
 ```
@@ -21,11 +21,13 @@ C++ 语境下，搭建 QGIS 二次开发环境的本质无非是：
 
 下载 [OSGeo4W](https://trac.osgeo.org/osgeo4w)。这是 Windows 环境下的一个程序包管（quan）理（jia）器（tong）。我们需要的所有包都可以用这个工具下载获取。
 
-安装 OSGeo4W。选择 Desktop 典型安装即可（因为源位于国外的原因，安装比较慢）。你也可以选择高级安装，手动选择需要的库。
+安装 OSGeo4W。选择 Desktop 典型安装即可（因为源位于国外的原因，安装比较慢）。你也可以选择高级安装，手动选择需要的库，确保把所有带 `qgis` 的库都选上。
 
 无需设置系统环境变量。安装好 OSGeo4W 之后，你就可以准备建立 C++ 项目了。建立一个 C++ **空项目**。我使用的是 VS 2017 社区版。
 
-现在你可以选择是用长期发布版 (ltr) 组合 `QGIS 2.18 + Qt 4`，还是使用较新版本的组合 `QGIS 3.2 + Qt 5`。我尝试的时候新版本出现了一些莫名其妙的问题，最终选用的是较稳定的老版本。以下就以老版本为例介绍。
+*-- 2019 年 2 月更新 --*
+
+2019 年初，QGIS 官方发布了最新的长期支持版 3.4，代替了老旧的 2.18 版本。旧版组合 `QGIS 2.18 + Qt 4` 仍然可用，但建议迁移到新版本，使用 `QGIS 3.2 + Qt 5` 的组合。以下以新版本为例介绍。
 
 {{ AbstractBreaker }}
 
@@ -36,44 +38,39 @@ C++ 语境下，搭建 QGIS 二次开发环境的本质无非是：
 
 #### 包含目录：
 
-将下列目录添加到“包含目录”中：
+打开项目属性，将下列目录添加到“包含目录”中：
 
-- `[OSGeo4W]\include`
-- `[OSGeo4W]\include\qt4`
-- `[OSGeo4W]\include\qt4\QtCore`
-- `[OSGeo4W]\include\qt4\QtGui`
-- `[OSGeo4W]\include\qt4\QtXml`
-- `[OSGeo4W]\apps\qgis-ltr-dev\include`
+- `[OSGeo4W]\apps\Qt5\include`
+- `[OSGeo4W]\apps\Qt5\include\QtCore`
+- `[OSGeo4W]\apps\Qt5\include\QtGui`
+- `[OSGeo4W]\apps\Qt5\include\QtXml`
+- `[OSGeo4W]\apps\Qt5\include\QtWidgets`
+- `[OSGeo4W]\apps\qgis-ltr\include`
 
-其中，`[OSGeo4W]\include\qt4` 下面存放的是 Qt4 的不同模块，可以按需添加。一般 `QtCore` 和 `QtGui` 是必定需要的。我这里额外添加了 `QtXml` 模块。
-
-如果想使用新版本，将 `[OSGeo4W]\include\qt4` 改为 `[OSGeo4W]\apps\Qt5\include`；将 `[OSGeo4W]\apps\qgis-ltr-dev`改为 `[OSGeo4W]\apps\qgis-dev`。
+OSGeo4W 中，所有安装的库都分门别类存放在 `apps` 文件夹中。`[OSGeo4W]\apps\Qt5\include` 下面存放的是 Qt5 的不同模块头文件，按文件夹存放，除了我上面提到的四个基本模块外，可以根据需要添加。`qgis-ltr` 为 QGIS 最新稳定版。
 
 #### 库目录：
 
 将下列目录添加到“库目录”中：
 
-- `[OSGeo4W]\lib`
-- `[OSGeo4W]\apps\qgis-ltr-dev\lib`
-
-如果想使用新版本，将 `[OSGeo4W]\lib` 改为 `[OSGeo4W]\apps\Qt5\lib`；将 `[OSGeo4W]\apps\qgis-ltr-dev\lib`改为 `[OSGeo4W]\apps\qgis-dev\lib`。
+- `[OSGeo4W]\apps\Qt5\lib`
+- `[OSGeo4W]\apps\qgis-ltr\lib`
 
 
 ### 3. 设置附加依赖项
 
 在项目属性页中依次选择“链接器”，“输入”，在“附加依赖项”中添加：
 
-- `QtCore4.lib`
-- `QtGui4.lib`
+- `Qt5Core.lib`
+- `Qt5Gui.lib`
+- `Qt5Widgets.lib`
 - `qgis_core.lib`
 - `qgis_gui.lib`
-
-如果想使用新版本，将 `QtCore4.lib` 改为 `Qt5Core.lib`；`QtGui4.lib` 改为 `Qt5Gui.lib`。
 
 
 ### 4. 设置调试环境
 
-在项目属性页中选择“调试”，设置“环境”的值为：`PATH=[OSGeo4W]\bin;[OSGeo4W]\apps\qgis-ltr-dev\bin` 即可。这样程序就能正确获取运行时所需的 DLL 文件。
+在项目属性页中选择“调试”，设置“环境”的值为：`PATH=[OSGeo4W]\bin;[OSGeo4W]\apps\qgis-ltr\bin;F:\OSGeo4W64\apps\Qt5\bin` 即可。这样程序就能正确获取运行时所需的 DLL 文件。
 
 
 ### 5. 测试
@@ -84,14 +81,7 @@ C++ 语境下，搭建 QGIS 二次开发环境的本质无非是：
 QgsApplication app(argc, argv, true);
 ```
 
-尝试生成项目。如果失败，可能会遇到 QGIS 源代码中一些空宏未定义导致编译不通过的问题（报一大堆不相关的编译错误），你可能需要在源文件中手动定义这些空宏：
-
-```
-#define CORE_EXPORT
-#define GUI_EXPORT
-```
-
-另外还可能遇到 `error C2065: “M_PI”: 未声明的标识符` 这样的问题。同样在源文件中加入定义解决：
+尝试生成项目。可能遇到 `error C2065: “M_PI”: 未声明的标识符` 这样的问题。在源文件中加入定义：
 
 ```
 #define _USE_MATH_DEFINES
