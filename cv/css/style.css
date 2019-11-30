@@ -234,12 +234,18 @@ section.itemized-simple .item .item-subtitle {
 
 
 @media print {
+    body {
+        font-size: smaller;
+    }
     .inner-wrapper {
         display: block;
     }
     header {
         flex: 0 0 auto;
-        margin-bottom: 50px;
+        margin-bottom: 20px;
+    }
+    header h1 {
+        font-size: 2em;
     }
     header .left, header .lang-switch {
         display: none;
@@ -251,7 +257,19 @@ section.itemized-simple .item .item-subtitle {
         text-align: left;
     }
     main section {
-        margin-bottom: 25px;
+        margin-bottom: 15px;
+    }
+    main section h2 {
+        margin-bottom: 10px;
+    }
+    main section p {
+        margin: 8px 0;
+    }
+    main section ul {
+        margin: 8px 0;
+    }
+    main section .item-subtitle-2 {
+        margin-bottom: 5px;
     }
     ul.contacts {
         columns: 3;
