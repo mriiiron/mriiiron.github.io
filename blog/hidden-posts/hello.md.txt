@@ -1,7 +1,7 @@
 ```
 title:      这里是 mriiiron 的博客，由 Salvia 强力驱动
 author:     mriiiron
-date:       2000-01-01
+date:       2018-01-01
 ```
 
 放下这篇文章的时候我才意识到，这个博客系统居然是我自己撸出来的，而且居然 work 了……

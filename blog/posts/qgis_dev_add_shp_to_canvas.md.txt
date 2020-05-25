@@ -1,0 +1,188 @@
+```
+title:      QGIS 二次开发 2：加载 Shapefile 到画布
+author:     mriiiron
+date:       2020-05-23
+category:   技术
+tags:       QGIS
+```
+
+今天我们来解决一个最基础的问题：显示数据。
+
+看似简单的需求，加起来就十几行代码，其实已经覆盖了 QGIS 二次开发中不少重要的内容。对于初学者，我尽可能保证大家每一课都能有所收获，且不至于一次性摄入太多东西导致消化不良。何况一次讲太多，我写文章和整理文章也不容易嘛。
+
+数据我们选用最常见的 ESRI Shapefile 格式，这应该是学习 GIS 的小伙伴尤其是 ArcGIS 入门的小伙伴最熟悉的矢量格式了。如第一篇[「QGIS 二次开发：简介」](./post.html?postKey=qgis_dev_intro)中我已经提到的，Shapefile 为 OGR 所支持的最重要的数据格式之一，自然可以被 QGIS 加载。
+
+我们先来看一看完整代码，然后我再逐行讲解。
+
+{{ AbstractBreaker }}
+
+```clike
+#define _USE_MATH_DEFINES
+#include <cmath>
+
+#include <qgsapplication.h>
+#include <qgsproviderregistry.h>
+#include <qgsmapcanvas.h>
+#include <qgsvectorlayer.h>
+#include <qgsproject.h>
+
+int main(int argc, char *argv[])
+{
+
+    // 创建 QgsApplication 实例
+    QgsApplication app(argc, argv, true);
+
+    // 设置并检查数据插件目录
+    QgsProviderRegistry::instance("C:/OSGeo4W64/apps/qgis-ltr/plugins");
+
+    // 控制台打印已载入的插件目录
+    qDebug() << "QGIS data providers loaded:" << QgsProviderRegistry::instance()->providerList() << endl;
+
+    // 设置 GDAL 数据目录环境变量
+    qputenv("GDAL_DATA", "C:/OSGeo4W64/share/gdal");
+
+    // 创建 QgsCanvas 画布实例
+    QgsMapCanvas c;
+
+    // 从磁盘 .shp 文件创建矢量图层
+    QgsVectorLayer* pVectorLayer = new QgsVectorLayer(u8"C:/Work/nobleprog/data/shp/全国县级边界shp低分辨率/gadm36_CHN_2.shp", u8"市级行政区");
+
+    // 确认图层是否创建成功
+    qDebug() << "Is layer valid:" << pVectorLayer->isValid();
+
+    // 将图层添加到画布上
+    c.setLayers(QList<QgsMapLayer*>() << pVectorLayer);
+
+    // 设置画布窗体标题并显示画布
+    // 画布本身是 QWidget 的子类，因此可以承担 QWidget 的所有操作
+    c.setWindowTitle(u8"QGIS 二次开发：画布");
+    c.show();
+
+    // 缩放到图层的空间范围
+    c.zoomToFullExtent();
+
+    // 启动 QgsApplication 实例
+    return app.exec();
+
+}
+```
+
+### 建立 QgsApplication
+
+首先我们建立必备的 `QgsApplication` 实例。
+
+```clike
+QgsApplication app(argc, argv, true);
+```
+
+构造函数接受 5 个参数。其中 3 个是必备参数。前两个参数传入 `main` 函数的两个参数即可，第三个参数表示是否激活图形界面 GUI，一般设置为 `true`，除非你想做一个命令行的程序，如单纯用于数据处理，无需界面的程序。这里我们设置为 `true`。
+
+`QgsApplication` 是 `QApplication` 的子类。`QApplication` 则负责管理 Qt 应用程序的图形界面控制流和主要配置。更多信息参见 [Qt 官方文档](https://doc.qt.io/qt-5/qapplication.html)。
+
+### 设置数据驱动插件目录
+
+然后我们为整个项目设置数据驱动插件目录。该过程通过访问单例 `QgsProviderRegistry` 的实例的同时传入数据驱动插件的目录作为参数来实现。
+
+```clike
+QgsProviderRegistry::instance("C:/OSGeo4W64/apps/qgis-ltr/plugins");
+qDebug() << "QGIS data providers loaded:" << QgsProviderRegistry::instance()->providerList() << endl;
+```
+
+数据驱动插件为一系列的动态链接库文件，存放于 QGIS 开发包的 plugins 目录下。
+
+> 注：本教程均假设 OSGeo4W 的安装目录为 `C:/OSGeo4W64`。
+
+调用 `QgsProviderRegistry` 的成员函数 `providerList()` 可以返回一个存放所有支持的数据驱动插件的 `QStringList` 字符串列表，可以用于 debug。
+
+### GDAL 环境变量
+
+随后程序会检测 GDAL 的环境变量 `GDAL_DATA` 是否设置。该环境变量为一个目录，存放 GDAL 所需的资源和数据文件等。该目录在 OSGeo4W 安装目录下的 `share/gdal` 文件夹内。如该环境变量没有设置，控制台会报相应错误。例如：
+
+```
+ERROR 4: Unable to open EPSG support file gcs.csv.  Try setting the GDAL_DATA environment variable to point to the directory containing EPSG csv files.
+```
+
+利用 Qt 提供的全局函数 `qputenv()` 可以方便的设置环境变量而无需修改操作系统设置。该环境变量仅在当前程序中生效。更多信息请参见 [Qt 官方文档](https://doc.qt.io/qt-5/qtglobal.html#qputenv)。
+
+```clike
+qputenv("GDAL_DATA", "C:/OSGeo4W64/share/gdal");
+```
+
+### 创建画布
+
+```clike
+QgsMapCanvas c;
+```
+
+QgsMapCanvas 可以说是我们今后会与之打交道最多的类之一。它是 Qt 用于描述图形场景的 `QGraphicsView` 的子类。QGIS 在 `QGraphicsView` 基础上对其进行了巨量的扩展。我们将在今后的文章中对其进行逐步深入的解读。本例中我们用它来显示我们即将创建的图层。
+
+### 从磁盘文件创建矢量图层
+
+接下来我们将准备好的 Shapefile 文件加载到画布中。首先创建 `QgsVectorLayer` 的实例。该类在 QGIS 中描绘一个矢量图层，是 `QgsMapLayer` 的子类。
+
+```clike
+QgsVectorLayer* pVectorLayer = new QgsVectorLayer(u8"C:/Work/nobleprog/data/shp/全国县级边界shp低分辨率/gadm36_CHN_2.shp", u8"市级行政区");
+```
+
+其构造函数的官方文档描述为：
+
+```clike
+QgsVectorLayer::QgsVectorLayer	(
+    const QString & path = QString(),
+    const QString & baseName = QString(),
+    const QString & providerLib = "ogr",
+    const QgsVectorLayer::LayerOptions & options = QgsVectorLayer::LayerOptions() 
+)	
+```
+
+总共 4 个参数：
+
+- 第一个参数为数据文件的路径 (磁盘文件) 或指向数据位置的 URL (网络图层、数据库表等)，对于 Shapefile 文件，为 .shp 文件的路径；
+- 第二个参数为图层的显示名称，可随意指定；
+- 第三个参数为一个 `QString` 字符串，默认为 `"ogr"`，表示 data provider 的名称（这个词实在不知道怎么翻译，一些文档不太贴切的翻译为“数据提供者”）。之前的文章描述 GDAL 的时候就提到，OGR 是 GDAL 中负责支持矢量数据的部分。大部分文件类型矢量数据都可由 OGR 支持。除此之外还支持一些其他的值如 `"postgres"` 表示 PostGIS 数据库表、`"memory"` 表示内存图层（即临时图层）等。
+- 第四个参数为图层创建选项，这里暂不涉及。
+
+图层创建完成后，可调用 `isValid()` 方法查看是否创建成功。如不成功可进一步调用 `error()` 方法返回一个 `QgsError` 对象，便于错误排查。
+
+```clike
+qDebug() << "Is layer valid:" << pVectorLayer->isValid();
+```
+
+> 注：这两个方法都属于基类 `QgsMapLayer`。
+
+### 将图层添加到画布
+
+图层创建成功后，将其添加到画布。调用 `QgsMapLayer` 的 `setLayers()` 方法即可：
+
+```clike
+c.setLayers(QList<QgsMapLayer*>() << pVectorLayer);
+```
+
+该方法接受一个图层基类 `QgsMapLayer` 指针的列表。通常情况下，图层越位于列表前面（即下标越小），绘制顺序越靠后（即越靠近观察者）。
+
+### 显示画布
+
+```clike
+c.setWindowTitle(u8"QGIS 二次开发：画布");
+c.show();
+```
+
+在 Qt 中，只要是 `QWidget` 及其子类都可以作为单独的程序窗体处理。`QgsMapCanvas` 作为 `QGraphicsView` 的子类自然也不例外。我们可以为其设置窗口标题，并让其像普通的窗口一样显示出来。
+
+### 缩放图层
+
+```clike
+c.zoomToFullExtent();
+```
+
+这一步操作会让 QgsMapCanvas 缩放到内部所有可见图层的完整范围 (full extent)，在 GIS 软件中是很常见的操作。
+
+### 启动 QgsApplication
+
+```clike
+return app.exec();
+```
+
+最后，启动 QgsApplication (即 QApplication)。`exec()` 让程序进入主循环。主循环被打断后（如所有窗口关闭），程序结束。
+
+至此我们就完成了一个最简单的 QGIS 二次开发实例。运行程序，如果没有异常的话，你可以看到你成功在画布上显示了一个 Shapefile 数据。恭喜！

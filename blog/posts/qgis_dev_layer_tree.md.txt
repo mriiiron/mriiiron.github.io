@@ -1,0 +1,177 @@
+```
+title:      QGIS 二次开发 3：图层列表的实现
+author:     mriiiron
+date:       2020-05-24
+category:   技术
+tags:       QGIS
+```
+
+上一篇我们讲解了加载单个图层到画布。但在实际开发中我们通常会遇到同时显示多个图层，并且还要实时显示和隐藏各图层的需求，如同 ArcGIS 的图层列表那样。大致效果为：
+
+- 界面左侧显示图层列表，列出当前已加载的所有图层，同时每个图层前面有复选框可以控制图层的显示/隐藏；
+- 界面右侧为画布，按图层列表的适当顺序显示所有未隐藏的图层。
+
+本篇文章我们就具体讲述图层列表的实现。
+
+QGIS 提供了 `QgsLayerTreeView` 类，专门实现图层列表功能。`QgsLayerTreeView` 是 `QTreeView` 的子类，遵循Qt 的 Model/View 架构。与 `QgsLayerTreeView` 配合的是 `QgsLayerTreeModel` 类（`QgsAbstractItemModel` 的子类）。
+
+> 注：准确的讲，上述“图层列表”应该叫“图层树”，因为在 GIS 软件中，图层可以分组，并且图层下面还有图例等，构成一个树形结构。但本篇文章不考虑这些问题，仅简单将其看作图层列表。以下“图层树”“图层列表”都是一个意思，皆指代 `QgsLayerTreeView` 的实例。
+
+关于 Qt 的 Model/View 架构，简单说就是以后台的 Model 负责数据，数据的变化引发前台的 View 的变化，前台 View 的修改同样也会反馈到后台的 Model 数据，即通常所说的双向绑定。由于篇幅原因，不在此展开说明，具体可参见 [Qt 官方文档](https://doc.qt.io/qt-5/model-view-programming.html)。
+
+{{ AbstractBreaker }}
+
+与前一篇文章直接显示 `QgsMapCanvas` 不同，本篇文章中，我们将手动继承 `QWidget` 构造我们自己的组件，然后把图层列表组件 `QgsLayerTreeView` 和画布组件 `QgsMapCanvas` 以左右布局作为子组件加载进去。代码如下：
+
+```clike
+class LayerTreeDemo : public QWidget
+{
+
+public:
+
+    LayerTreeDemo(QWidget * parent = 0);
+
+private:
+
+    // 画布
+    QgsMapCanvas mMapCanvas;
+
+    // 图层树 View
+    QgsLayerTreeView mLayerTreeView;
+
+    // 更新画布图层的“事件回调”
+    void updateCanvasLayerSet();
+
+};
+```
+
+我们继承 `QWidget` 构建了我们自己的组件 `LayerTreeDemo`。我们将画布和图层树作为其私有成员添加进去。其构造函数与 `QWidget` 相同，也许传入其父组件的指针。额外我们设定一个私有方法，作为更新画布图层的事件回调，后面会详细描述。
+
+### 构造函数
+
+首先我们定义构造函数：
+
+```clike
+LayerTreeDemo::LayerTreeDemo(QWidget * parent) :
+    QWidget(parent),
+    mMapCanvas(this),
+    mLayerTreeView(this)
+{
+```
+
+在初始化列表中把参数传入基类，再初始化 `mMapCanvas` 和 `mLayerTreeView` 两个私有成员。传入 `this` 作为构造函数参数表示将它们的父组件都设定为当前 `LayerTreeDemo` 的实例自身。
+
+> 注：`QgsMapCanvas` 和 `QgsLayerTreeView`，以及大部分 QGIS 提供的组件接口，都是 `QWidget` 的子类。其构造函数的第一个参数都是其父组件。
+
+接下来，我们创建 `QgsLayerTreeModel` 并与私有成员 `mLayerTreeView` 关联。
+
+```clike
+    QgsLayerTree* pLayerTreeRoot = QgsProject::instance()->layerTreeRoot();
+```
+
+我们通过单例 `QgsProject` 的唯一实例，调用其 `layerTreeRoot()` 方法，获取了图层树的根节点 `QgsLayerTree*`。
+
+`QgsProject` 是最重要的 QGIS 开发接口之一。它封装了当前 QGIS “工程”的信息。在 QGIS 软件中我们可以新建/保存/打开工程（可以输出为 .qgs 文件，类似于 ArcGIS 的 .mxd 地图文档文件），即指的是 `QgsProject` 实例。一个 QGIS 应用程序在同一时刻只能有一个 `QgsProject` 实例。`QgsProject` 其中最重要的作用就是记录当前工程的图层树结构，想象你打开一个 QGIS 工程的时候，图层树将会按照其保存时的样子原封不动的载入。因此我们可以通过 `QgsProject` 的单例，获取当前工程的图层树根节点。
+
+随后我们将图层树的图层隐藏/显示点击“事件”，绑定到我们自己定义的“回调”上：
+
+```clike
+    QObject::connect(pLayerTreeRoot, &QgsLayerTreeNode::visibilityChanged, this, &LayerTreeDemo::updateCanvasLayerSet);
+```
+
+这里的“事件”“回调”我加了引号，事实上这里是利用了 Qt 的信号和槽机制。该机制是 Qt 框架的一项特色，只要是 `QObject` 的子类都可以发出 (emit) **信号**，并被所有的其他 `QObject` 子类接收。如若某 `QObject` 子类实现了针对此信号的**槽**，并将信号**绑定**到了槽之上，便可以捕获此信号（连同信号携带的参数），进行相应处理。类似于传统的事件回调机制但更灵活。具体请参阅 [Qt 文档](https://doc.qt.io/qt-5/signalsandslots.html)。
+
+具体到这一句代码，是将图层树的根节点 `pLayerTreeRoot` 发射的信号 `visibilityChanged` 绑定到了当前 `LayerTreeDemo` 实例的 `updateCanvasLayerSet` 槽。这样当图层树的根节点的任意后代的可视性发生变化时（用户点选或取消点选了该图层前面的复选框），将会触发 `updateCanvasLayerSet` 方法的执行。
+
+接下来，我们通过刚刚的图层树根节点 `pLayerTreeRoot`，创建一个 `QgsLayerTreeModel` 的实例，同时将 `pLayerTreeModel` 设置为“允许调整图层可视性”（即允许用户通过点选复选框手动隐藏/显示图层）。
+
+```clike
+    QgsLayerTreeModel* pLayerTreeModel = new QgsLayerTreeModel(pLayerTreeRoot);
+    pLayerTreeModel->setFlag(QgsLayerTreeModel::AllowNodeChangeVisibility);
+```
+
+然后我们将 `mLayerTreeView` 的 model 设置为刚刚创建的 `QgsLayerTreeModel` 实例，从而完成绑定。
+
+```clike
+    mLayerTreeView.setModel(pLayerTreeModel);
+    mLayerTreeView.setMaximumWidth(200);  // 设置一下最大宽度以便给画布留出更多显示空间
+```
+
+下一步我们把图层树的 View 和画布一起，添加到 LayerTreeDemo 窗体之中。为了实现此效果我们需要借助布局。
+
+Qt 的布局部分类似于前端 CSS 中的 flexbox，分为横向布局（水平布局）、纵向布局（竖直布局）、网格布局及表单布局。其中最常用的是横向和纵向布局：组件（`QWidget` 及其子类）以横排或纵排的方式放置于布局中，通过各自的 `size` 及 `sizePolicy` 等属性决定占用多少空间。关于 Qt 布局的资料还是请参见 [Qt 官方文档](https://doc.qt.io/qt-5/layout.html)。
+
+```clike
+    QHBoxLayout* pLayout = new QHBoxLayout();
+    pLayout->addWidget(&mLayerTreeView);
+    pLayout->addWidget(&mMapCanvas);
+```
+
+这里我们先创建了一个水平布局 `QHBoxLayout` 的实例，再将图层列表 `mLayerTreeView` 和画布 `mMapCanvas` 先后加入。这样图层列表显示在左边，画布显示在右边，同时图层列表占据最大 200 像素的宽度，剩余宽度全部分配给画布。
+
+然后，我们将水平布局应用于当前 `LayerTreeDemo` 窗体的实例，即完成了界面布局。
+
+```clike
+    this->setLayout(pLayout);
+    this->resize(1000, 600);  // 设置窗体尺寸为 1000 * 600
+    this->setWindowTitle(u8"QGIS 二次开发：图层树");  // 设置窗体标题
+```
+
+接下来我们参照上一篇文章[「QGIS 二次开发：加载 Shapefile 到画布」](./post.html?postKey=qgis_dev_add_shp_to_canvas)的方法，创建三个 `QgsVectorLayer` 矢量图层。
+
+```clike
+    QgsVectorLayer* pVectorLayer_1 = new QgsVectorLayer(u8"C:/Work/nobleprog/data/shp/全国县级边界shp低分辨率/gadm36_CHN_1.shp", u8"省级行政区");
+    QgsVectorLayer* pVectorLayer_2 = new QgsVectorLayer(u8"C:/Work/nobleprog/data/shp/全国县级边界shp低分辨率/gadm36_CHN_2.shp", u8"市级行政区");
+    QgsVectorLayer* pVectorLayer_3 = new QgsVectorLayer(u8"C:/Work/nobleprog/data/shp/全国县级边界shp低分辨率/gadm36_CHN_3.shp", u8"县级行政区");
+```
+
+> 注：出于代码健壮性考虑，对于每个图层，使用前都应用 `isValid()` 判断其是否生成成功。
+
+创建图层成功后，将各图层加入当前工程。调用 `QgsProject` 单例的 `addMapLayer()` 方法。
+
+注意在上一篇文章中我们并没有执行此步骤，而仅仅是简单把图层添加到了画布。把图层添加到工程和把图层添加到画布两者并没有必然关系。加入工程的图层并不一定在画布上显示（如隐藏的图层），加入画布的图层也并不一定属于工程（如额外创建一个 `QgsMapCanvas` 显示与当前工程无关的图层，一个例子是 QGIS 软件选择坐标系的时候，界面上会有一个小画布显示当前所选坐标系在地球上的适用范围）。
+
+```clike
+    QgsProject::instance()->addMapLayer(pVectorLayer_1);
+    QgsProject::instance()->addMapLayer(pVectorLayer_2);
+    QgsProject::instance()->addMapLayer(pVectorLayer_3);
+```
+
+然后我们手动调用一次 `updateCanvasLayerSet` 方法（注意本方法同样也会被用户点选隐藏/显示图层触发），最后执行一次缩放到全图。
+
+```clike
+    updateCanvasLayerSet();
+    mMapCanvas.zoomToFullExtent();
+}
+```
+
+这样就完成了我们 `LayerTreeDemo` 构造函数的定义。接下来我们定义 `LayerTreeDemo` 的成员方法 `updateCanvasLayerSet`。只有两行：
+
+```clike
+void LayerTreeDemo::updateCanvasLayerSet()
+{
+    mMapCanvas.setLayers(QgsProject::instance()->layerTreeRoot()->checkedLayers());
+    mMapCanvas.refresh();
+}
+```
+
+这里我们又调用了我们熟悉的 `QgsMapCanvas::setLayers()` 方法，该方法的作用是设置画布上所显示的图层。利用 `QgsProject` 单例获得图层树的根节点，再通过根节点调用其 `checkedLayers()` 方法，可以直接获得根节点下属所有未隐藏的图层。该方法返回一个 `QList<QgsMapLayer *>` 结构，并已经按照显示顺序排好。我们可以直接将返回值传入 `setLayers()`。这样就可以直接把“当前工程内所有为隐藏的图层”直接传给 `mMapCanvas` 供其绘制了。
+
+完成上述工作后，我们的主函数就很简单了：
+
+```clike
+int main(int argc, char *argv[])
+{
+    QgsApplication app(argc, argv, true);
+    QgsProviderRegistry::instance("C:/OSGeo4W64/apps/qgis-ltr/plugins");
+    qputenv("GDAL_DATA", "C:/OSGeo4W64/share/gdal");
+
+    // 创建主窗体
+    LayerTreeDemo w;
+    w.show();
+
+    return app.exec();
+}
+```
+
+抛开我们在上篇文章已经熟悉的部分，我们在本例中创建了 `LayerTreeDemo` 主窗体并调用 `show()` 显示之。顺利的话你将看到一个界面：左侧图层列表显示三个图层，右侧是画布。鼠标点击左侧三个图层前面的复选框可以控制各图层的隐藏和显示。恭喜！

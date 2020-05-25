@@ -1,0 +1,95 @@
+```
+title:      QGIS 二次开发 0：简介
+author:     mriiiron
+date:       2020-05-07
+category:   技术
+tags:       QGIS
+```
+
+19 年回国以来因缘巧合之下接触 QGIS，从业一年半有余，感觉国内 QGIS 二次开发中文资料真的不多（虽然英文的也不多），只有零星的一些博客文章，很多还是基于上古版本（2.x），不少文章还具有一定误导性，可参考性不强。在线交流方面也基本只有很少几个 QQ 群比较活跃。最近恰好有点时间，把从业以来的经历做个总结，希望能帮到同在 OpenGIS 道路上努力的朋友。
+
+工具链的转变是一个不太舒服的过程，尤其建立在地信行业大多数从业者事实上并没有经受过软件开发训练和教育这一事实上。大家顺理成章的学习基于 ArcGIS 的开发，顺理成章的将其应用于工作项目之中。用人单位自然也只会顺理成章的招聘同一技术栈的人才，导致国内 ArcGIS 技术栈的开发人员依然占据压倒性的数量优势（咱先不谈盗版用户好么）。在此我也不是非要劝大家都去玩开源，只是希望尽可能帮助有志于此的朋友，让他们学习的过程中，能够参考的资源多一点，就算是尽到我的一份力量了。
+
+提前感谢你的阅读。
+
+> 注意：本系列文章**不会**涉及到 QGIS 的手动编译。第一我也没做过，第二我认为想学习二次开发没有必要从编译开始入手。除非你有志于给 QGIS 贡献代码。关于 QGIS 编译请自行搜索网上相关文档。
+
+{{ AbstractBreaker }}
+
+
+## 1. OGC 规范、OSGeo 与开源 GIS
+
+[The Open Source Geospatial Foundation (OSGeo)](https://www.osgeo.org/about/) 是一个国际性的非营利组织，致力于开源 GIS 的发展与推广。众所周知，世界上所有 GISer 头上有一座永远绕不过去的大山叫 [ESRI](https://www.esri.com/)，商用一年的正版授权好几十万的那种。因此，开源 GIS 的需求应运而生。而 OSGeo 正是开源 GIS 背后的最大后盾。
+
+经过多年的积累沉淀，OSGeo 已经有了众多开源 GIS 项目，[基本都可以在 GitHub 上面找到](https://github.com/osgeo)。QGIS 是其麾下最重要的综合 GIS 平台，开源界 ArcMap 的最重要的竞争对手，是 OSGeo 项目集大成之作。QGIS 更新迭代速度极快，就在我从业的一年半时间，便从 3.2 迭代到了现在最新的 3.12，其长期发布版（LTR 版）也从 2.18 更新到了 3.4 以及现在的 3.10。其背后支持的库，如 GDAL, Proj 等，也正以同样的速度高速迭代中。最新版本的 QGIS 应用程序可以直接从其[官网](https://www.qgis.org/)免费下载。
+
+[Open Geospatial Consortium (OGC)](https://www.osgeo.org/partners/ogc/) 是一个非盈利的国际标准制定组织，于 1994 年建立，致力于提供地理信息行业软件和数据及服务的标准化工作。GIS 软件商开发遵循这一接口规范的空间数据的读写函数，可以实现异构空间数据库的互操作。其指定的规范一般统称为 OGC 规范。
+
+
+## 2. QGIS vs ArcGIS
+
+关于这点网上总结的人已经不少了。随便搜搜 [ArcGIS vs QGIS](https://cn.bing.com/search?q=arcgis+vs+qgis) 就出来一大堆。其实关于这个问题基本属于见仁见智，GIS 桌面端软件所需的基本功能，两者基本都具备，如果仅仅是使用的话，QGIS 可以替代 ArcGIS 的绝大部分功能。不过下面这些区别也是不得不提的。
+
+### ArcGIS 的优势
+
+- 更完备的来自官方和社区的技术支持：得益于 ESRI 商业公司的属性，经过多年运营沉淀，无论是在用户数量、社区活跃、多语言支持程度（尤其是中文）、文档质量上，都不是 QGIS 可以望其项背的；
+- [更完备的二次开发库](https://developers.arcgis.com/arcgis-runtime/)：抢占了 Java 和 .NET (主要是 C#) 这两个最重要的高地，同时不缺移动端 Android 和 iOS 的支持，这也是仅支持 Qt (C++) 二次开发的 QGIS 比不上的，何况 ArcGIS 现在也支持 Qt;
+- ArcToolbox：只要使用过 ArcGIS 的人都不会否认 ArcToolbox 的强大。同样是多年沉淀积累下来的业务工具，也绝非尚显简陋的 QGIS Plugins 可比拟。更何况还有完善 ModelBuilder 的可视化编程支持笼络一大票非专业程序员，以及更优雅的 Python 脚本支持。
+
+### QGIS 的优势
+
+- 开源免费：这个不用说了；
+- 效率和速度：不得不说，在超大规模数据的处理上，ArcGIS 是及不上 QGIS 的。我在项目中曾尝试打开千万级的矢量数据，QGIS 能够正常加载渲染（虽然渲染较慢），ArcGIS 则会直接崩溃。软件操作方面，由于 ArcGIS 过于臃肿，很多操作都能明显的感觉到延迟。同样的机器上 QGIS 的表现就会优秀很多；
+- 二次开发成果部署：基于 ArcGIS 二次开发的软件成果，通常都需要依赖于目标机器上的 ArcGIS 运行环境。期间可能涉及到各种诸如 ArcGIS 版本、Python 版本、.NET 版本等复杂的部署问题。而 QGIS 得益于 Qt 的易用性和 C++ 的简洁（我认真的），甚至可以做到直接把软件一套包含所有的 DLL 打包，目标机器解压即可运行的程度，而且打包体积也相对很小；
+- 对 PostGIS 的集成：立项之初 QGIS 就确定了其对 PostGIS 这一最重要的开源空间数据库的原生支持。相比之下 ArcGIS 需要通过 SDE 来处理，效率不算太好。
+
+
+## 3. QGIS 的依赖
+
+QGIS 运行主要依赖下面的组件和库：
+
+### Qt
+
+Qt 的历史可以追溯到 1991 年。是由 [The Qt Company](https://www.qt.io/) 开发和维护的，基于 C++ 的图形用户界面应用程序开发框架。Qt 是目前市面上最优秀的 C++ GUI 框架之一，当然也可用于开发非 GUI 程序，如控制台工具和服务器程序。QGIS 原称 Quantum GIS，然而其首字母一说亦指 Qt。
+
+[Qt 开发文档](https://doc.qt.io/qt-5/)
+
+### GDAL
+
+全称 Geospatial Data Abstraction Library (地理空间数据抽象库)。简单说，GDAL 是一个支持 OSGeo 所发布的各种空间数据格式的读取、转换和处理库。它支持茫茫多[栅格](https://gdal.org/drivers/raster/index.html)和[矢量](https://gdal.org/drivers/vector/index.html)格式，是开源 GIS 最重要的依赖库之一。其大致分为以下三个部分：
+
+- GDAL：负责栅格数据支持。自 GDAL 2.0 版本起，与 OGR 集成，并称 GDAL/OGR；
+- OGR：全称 **O**pen**G**IS Simple Features **R**eference (开源 GIS 简易要素参考)，负责矢量数据支持。现已与 GDAL 集成；
+- CPL：全称 Common Portability Library，提供一些基础数据类型和接口的跨平台支持（例如对字符串的封装）。调用 GDAL API 的时候经常会用到。
+
+QGIS 本身高度依赖于 GDAL，很多 API 实质上就是对 GDAL 的再封装。我们在二次开发的过程中也经常会绕过 QGIS 直接使用 GDAL 接口来实现需要的功能。
+
+[GDAL 官网](https://gdal.org/)
+
+### PROJ
+
+PROJ 是一个通用的地理空间坐标系转换库，功能包括且不限于投影变换与地理坐标转换。GDAL 的地理坐标系模块即是基于 PROJ。它最大的特点是利用 `proj-string` 语法定义坐标系变换。以下是一个 `proj-string` 的例子，它的意思是，*在 GRS80椭球上，有效纬度范围 56.5 执行墨卡托 (merc) 投影转换*。这套规则十分复杂，具体参见 PROJ 文档。
+
+```
++proj=merc +lat_ts=56.5 +ellps=GRS80
+```
+
+[PROJ 官网](https://proj.org/)
+
+### GEOS
+
+全称 Geometry Engine, Open Source (开源几何图形引擎)，提供了 OGC 规范中简单几何要素对象（如点、线、面）操作的 C++ 语言实现。包括一系列空间矢量几何图形的描述和空间算法等，是 GIS 软件操作空间对象的重要基础。
+
+
+## 4. 参考资料和学习资源
+
+下面分享一些个人收集的学习资源，基本都是个人这一年多来的收藏。有些文章可能比较老了但仍然具有参考价值。
+
+- [Jacory_Gao 的博客](https://blog.csdn.net/deirjie)：我个人就是看他的文章入门的。
+- [Qt 实战一二三](https://blog.csdn.net/liang19890820/article/details/50277095)：一去丶二三里的博客文章整理。他的 Qt 开发系列文章都非常实用。
+- [麻辣 GIS](https://www.malagis.com)：国内挺不错的 GIS 综合学习资源站。
+- [QGIS 官方文档](https://qgis.org/api/index.html)
+- [Qt 官方文档](https://doc.qt.io/qt-5)
+
+
+基础知识就到这里，下一篇文章正式进入 QGIS 二次开发的世界。
