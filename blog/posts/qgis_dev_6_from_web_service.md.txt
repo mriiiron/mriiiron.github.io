@@ -1,0 +1,98 @@
+```
+title:      QGIS 二次开发 6：从 Web 服务加载图层
+author:     mriiiron
+date:       2020-05-30
+category:   技术
+tags:       QGIS
+```
+
+本篇文章介绍从 Web 服务加载数据作为图层。
+
+前面我们已经实现了从文件系统和数据库表加载矢量图层。事实上在 QGIS 中，加载图层（无论是矢量或栅格）的操作都类似，重点在于第一个参数，即用合适的方法构造的 URI，以及正确填写第三个参数数据驱动名。
+
+Web 服务分很多种类型，按照 OGC 标准，常见的有如下几种：
+
+- WMS: Web Map Service (在线地图服务)
+- WMTS: Web Map Tile Service (在线瓦片地图服务)
+- WFS: Web Feature Service (在线要素服务)
+- WCS: Web Coverage Service (在线覆盖数据服务)
+- WPS: Web Processing Service (在线数据处理服务)
+
+除 WPS 外均可作为数据加载。Coverage 是一种比较老的数据类型现在用的较少。WMS 和 WMTS 都是基于网络的栅格数据服务，数据返回的形式是一张图片，或多层网格状的图片阵列（瓦片）；WFS 则是基于网络的矢量数据服务，数据返回的形式跟本地矢量图层类似，是一系列要素数据构成的集合。
+
+> 注：数据本身的类型和数据发布之后的服务类型并非绝对对应。例如，矢量数据文件也可以 WMS 的形式发布。返回的是预渲染的栅格图片。
+
+下面我们以加载天地图数据为例。
+
+{{ AbstractBreaker }}
+
+首先前往天地图开发资源官网：[http://lbs.tianditu.gov.cn](http://lbs.tianditu.gov.cn/)
+
+要想调用天地图 API 首先需要申请一个 key。注册账户后进入控制台，点击“创建新应用”按钮，按照提示创建一个应用。应用信息可以随便填写，但“服务类型”必须勾选“瓦片地图服务（矢量、影像、地形）”。引用创建后会得到一串 32 个字母和数字构成的应用 key。
+
+接下来我们构造读取网络服务所需的原始 URL。范例如下：
+
+```
+type=xyz&url=http://t0.tianditu.com/DataServer?T=img_w&x={x}&y={y}&l={z}&tk=[你的key]&zmax=18&zmin=0
+```
+
+- `t0.tianditu.gov.cn` 为天地图 API 的域名。其中 t0 可以替换为 t0 ~ t7 中的任意一个;
+- `img_w` 代表影像底图，球面墨卡托投影 ([EPSG:3857](http://epsg.io/3857))。修改这个值可获取矢量（街道）底图、矢量注记、影像底图、影像注记等。支持经纬度投影或球面墨卡托投影；
+- `x={x}&y={y}&l={z}` 为 XYZ 格式数据的三个参数留位；
+- `tk=[你的key]` 这里填写刚刚申请的天地图开发 key；
+- `zmax=18&zmin=0` 代表缩放等级的上下限。
+
+接下来我们要做的工作就是把此 URL 用作程序里 `QgsRasterLayer` 构造函数的第一个参数即可。我们创建四个图层：矢量底图、矢量注记、影像底图、影像注记。按照上述规则，分别构建 URL，共四个，存入 `QString` 记录：
+
+```clike
+quint32 r = QRandomGenerator::global()->generate() % 8;
+QString tdtUrlBase = "http://t%1.tianditu.com/DataServer?T=%2&x={x}&y={y}&l={z}&tk=%3";
+QString token = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx";
+QString tdtImgUrl = tdtUrlBase.arg(QString::number(r), "img_w", token);
+QString tdtImgAnnoUrl = tdtUrlBase.arg(QString::number(r), "cia_w", token);
+QString tdtVecUrl = tdtUrlBase.arg(QString::number(r), "vec_w", token);
+QString tdtVecAnnoUrl = tdtUrlBase.arg(QString::number(r), "cva_w", token);
+
+// 影像底图
+QString tdtImgFull = QString("type=xyz&url=%1&zmax=18&zmin=0").arg(QUrl::toPercentEncoding(tdtImgUrl, ":/?=").constData());
+
+// 影像注记
+QString tdtImgAnnoFull = QString("type=xyz&url=%1&zmax=18&zmin=0").arg(QUrl::toPercentEncoding(tdtImgAnnoUrl, ":/?=").constData());
+
+// 矢量底图
+QString tdtVecFull = QString("type=xyz&url=%1&zmax=18&zmin=0").arg(QUrl::toPercentEncoding(tdtVecUrl, ":/?=").constData());
+
+// 矢量注记
+QString tdtVecAnnoFull = QString("type=xyz&url=%1&zmax=18&zmin=0").arg(QUrl::toPercentEncoding(tdtVecAnnoUrl, ":/?=").constData());
+```
+
+接下来我们创建四个图层。注意这里构造的是栅格图层 `QgsRasterLayer`，数据驱动是 `wms`。
+
+```clike
+mpBaseMapLayerImg = new QgsRasterLayer(tdtImgFull, "Tianditu Image", "wms");
+if (!mpBaseMapLayerImg->isValid())
+{
+    QMessageBox::critical(this, u8"错误", QString(u8"图层载入失败。\n\n返回消息：\n%1").arg(mpBaseMapLayerImg->error().message()));
+    return;
+}
+mpBaseMapAnnotationLayerImg = new QgsRasterLayer(tdtImgAnnoFull, "Tianditu Image Annotation", "wms");
+if (!mpBaseMapAnnotationLayerImg->isValid())
+{
+    QMessageBox::critical(this, u8"错误", QString(u8"图层载入失败。\n\n返回消息：\n%1").arg(mpBaseMapAnnotationLayerImg->error().message()));
+    return;
+}
+mpBaseMapLayerVec = new QgsRasterLayer(tdtVecFull, "Tianditu Vector", "wms");
+if (!mpBaseMapLayerVec->isValid())
+{
+    QMessageBox::critical(this, u8"错误", QString(u8"图层载入失败。\n\n返回消息：\n%1").arg(mpBaseMapLayerVec->error().message()));
+    return;
+}
+mpBaseMapAnnotationLayerVec = new QgsRasterLayer(tdtVecAnnoFull, "Tianditu Vector Annotation", "wms");
+if (!mpBaseMapAnnotationLayerVec->isValid())
+{
+    QMessageBox::critical(this, u8"错误", QString(u8"图层载入失败。\n\n返回消息：\n%1").arg(mpBaseMapAnnotationLayerVec->error().message()));
+    return;
+}
+```
+
+然后按照前几篇文章的方式，把 `QgsRasterLayer` 加入画布即可。运行程序，如果顺利的话可以看到天地图底图被成功载入，如果有误，请检查 URL 的构造，必要的时候可以在 QGIS 软件中尝试添加载入（选择 XYZ Tiles 数据员）。恭喜！

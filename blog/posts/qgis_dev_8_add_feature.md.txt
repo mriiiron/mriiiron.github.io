@@ -1,0 +1,233 @@
+```
+title:      QGIS 二次开发 8：添加矢量要素
+author:     mriiiron
+date:       2020-06-01
+category:   技术
+tags:       QGIS
+```
+
+对矢量要素的编辑是 GIS 软件很重要的功能点之一，也是最难实现的功能点之一。编辑矢量要素涉及到很多方面的考虑，包括且不限于矢量要素的几何类型，拓扑关系，构成要素的节点的增删改，编辑会话 (session) 的启动、回溯和提交，要素属性的增删改等。本文不会也不可能涉及到属性编辑的方方面面，仅仅实现了一个添加面要素的地图工具，作抛砖引玉的作用。
+
+我们预计实现如下需求：
+
+- 参照 QGIS 和 ArcGIS，用一个按钮控制编辑会话的开始和结束，即控制图层处于编辑状态与否。按下表示处于编辑状态，弹起处于非编辑状态；
+- 编辑状态下，激活“绘制多边形”按钮，点击激活添加多边形地图工具，弹起取消激活；
+- 添加多边形地图工具激活时，用户可以在画布上点击绘制多边形：左键添加节点，右键结束当前多边形绘制。
+
+{{ AbstractBreaker }}
+
+QGIS 提供了一个 `QgsMapToolCapture`，可以实现上述功能（这是 QGIS 软件自己所使用的地图工具），但不幸的是，这个工具的实例化需要引入 `QgsAdvancedDigitizingDockWidget` 类。从 QGIS 开发文档进入 `qgsadvanceddigitizingdockwidget.h` 源代码，可以发现一行 include：
+
+```clike
+#include "ui_qgsadvanceddigitizingdockwidgetbase.h"
+```
+
+这个类是一个停靠窗口 `QDockWidget`，在编辑要素的过程中，会弹出这个界面显示一些信息。因此如果我们强行 include 这个类，编译器会提示找不到 `ui_qgsadvanceddigitizingdockwidgetbase.h` 导致编译错误。原因是，这个类是一个**组件**，它是自带 UI 的，QGIS 的源代码中提供了这个组件的 .ui 文件（如同我们自己用 Qt Designer 创建的 .ui 文件一样）。所以，要使用 `QgsMapToolCapture`，我们必须从 GitHub 上下载 `QgsAdvancedDigitizingDockWidget` 的 .ui 文件 `qgsadvanceddigitizingdockwidget.ui`，用 `uic` 编译成 `ui_qgsadvanceddigitizingdockwidgetbase.h`，放到我们的源代码中，才可以通过编译。
+
+然而事情并没有那么简单。如果用 Qt Designer 打开下载回来的 `qgsadvanceddigitizingdockwidget.ui`，会发现缺失一大堆资源文件，你用 uic 编译也会报同样的错（虽然也可以编译）。因为 QGIS 做的 UI 有不少共享的资源文件，如图标等，都存在 Qt Designer 的资源描述文件（.qrc）文件中。如果要完整编译你还得去把 QGIS 所有的资源文件下载回来。做这么多麻烦事的目的仅仅是让 `QgsMapToolCapture` 通过编译，有一点本末倒置的感觉。因此，我放弃使用 `QgsMapToolCapture` 转而手动实现我们所需要的地图工具。
+
+`QgsMapToolCapture` 的继承链为：`QgsMapTool` <-- `QgsMapToolEdit` <-- `QgsMapToolAdvancedDigitizing` <-- `QgsMapToolCapture`。逐级往上翻看源代码，发现 `QgsAdvancedDigitizingDockWidget` 是在 `QgsMapToolAdvancedDigitizing` 这一级引入的。因此我们可以直接继承 `QgsMapToolEdit`。查看源代码得知，`QgsMapToolEdit` 相对于基本的 `QgsMapTool`，额外实现了如下重要功能：
+
+- `currentVectorLayer()`: 获取当前正在编辑的图层（即工具所属 `QMapCanvas` 的当前激活图层）
+- `createRubberBand()`: 可以直接从工具创建 `QgsRubberBand`，创建后自动附着于工具所属的 `QMapCanvas`上
+
+> `QgsRubberBand` 或称“橡皮筋”指的是绘制图形过程中的临时要素，因在图上画点的时候，绘制的节点很像钉子，要素的边又很想绷在钉子上的橡皮筋。
+
+这让我们可以比较方便的操作工具所属的图层和画布。我们创建一个 `QgsMapToolEdit` 的派生类，代码如下：
+
+```clike
+// AddPolygonTool.h
+
+class AddPolygonTool : public QgsMapToolEdit
+{
+
+public:
+
+	AddPolygonTool(QgsMapCanvas* pMapCanvas);
+
+	// 清除当前的 RubberBand
+	void clearRubberBand();
+
+protected:
+
+	// 重写 QgsMapTool 的鼠标移动事件
+	void canvasMoveEvent(QgsMapMouseEvent * e) override;
+
+	// 重写 QgsMapTool 的鼠标点击事件
+	void canvasPressEvent(QgsMapMouseEvent * e) override;
+
+private:
+
+	// 当前正在工作的 RubberBand
+	QgsRubberBand* mpRubberBand = nullptr;
+
+	// 记录是否正在绘制中，构造函数中初始化为 false
+	bool mIsDrawing;
+
+};
+```
+
+计划是重写鼠标点击事件：如当前无工作中的 RubberBand，则创建并存入 `mpRubberBand` 并点下第一个点。之后用户连续点击鼠标左键往 `mpRubberBand` 加入点，直到点击鼠标右键。点击鼠标右键表示停止绘制，如此时有效点数小于 3，不足以构成多边形，则丢弃，否则将 `mpRubberBand` 输出为新的 `QgsFeature`，加入受编辑的 `QgsVectorLayer` 之中。
+
+接下来，我们重写工具的鼠标点击事件：
+
+```clike
+// AddPolygonTool.cpp
+
+void AddPolygonTool::canvasPressEvent(QgsMapMouseEvent * e)
+{
+```
+
+若当前 RubberBand 为空（上一次绘制已经结束），则创建之：
+
+```clike
+	if (!mpRubberBand)
+	{
+		mpRubberBand = createRubberBand(QgsWkbTypes::GeometryType::PolygonGeometry);
+	}
+```
+
+然后判断当前按下的是左键还是右键。如果是左键，则更新工具状态 `mIsDrawing` 为 `true` 表示“绘制中”。并且将当前点击位置作为一个点，加入到 RubberBand 之中。
+
+```clike
+	if (e->button() == Qt::MouseButton::LeftButton)
+	{
+		mIsDrawing = true;
+		mpRubberBand->addPoint(e->mapPoint());
+	}
+```
+
+若右键按下，则先将 `mIsDrawing` 置 `false` 表示当前绘制结束：
+
+```clike
+	else if (e->button() == Qt::MouseButton::RightButton)
+	{
+		mIsDrawing = false;
+```
+
+如果当前 RubberBand 内顶点数不小于 3，则符合多边形生成的条件。此时创建一个新的要素 (`QgsFeature`)，将当前 RubberBand 绘制好的几何图形 (`QgsGeometry` 类型，通过 `asGeometry()` 方法获取) 赋予新建立的要素，并将此要素通过调用 `QgsVectorLayer` 的 `addFeature()` 方法，加入到图层之中。当前图层通过 `currentVectorLayer()` 获取。最后刷新画布。
+
+```clike
+		if (mpRubberBand->numberOfVertices() >= 3)
+		{
+			QgsFeature f;
+			f.setGeometry(mpRubberBand->asGeometry());
+			currentVectorLayer()->addFeature(f);
+			canvas()->refresh();
+		}
+```
+
+最后，无论新要素是否生成，删除当前 RubberBand，准备下一个多边形的绘制。
+
+```clike
+		clearRubberBand();
+	}
+}
+```
+
+`clearRubberBand()` 方法定义如下：
+
+```clike
+// AddPolygonTool.cpp
+
+void AddPolygonTool::clearRubberBand()
+{
+    // 若当前 RubberBand 为空则直接退出
+	if (!mpRubberBand)
+	{
+		return;
+	}
+
+    // 清除其内存并将指针置空
+	delete mpRubberBand;
+	mpRubberBand = nullptr;
+}
+```
+
+然后，为了实现绘制的过程中，RubberBand 的最后一个点“跟着鼠标走”的效果，我们重写工具的鼠标移动事件：
+
+```clike
+void AddPolygonTool::canvasMoveEvent(QgsMapMouseEvent * e)
+{
+	if (!mpRubberBand || !mIsDrawing)
+	{
+		return;
+	}
+	mpRubberBand->movePoint(e->mapPoint());
+}
+```
+
+这样就可以实现绘制时的“动态”效果。以上代码我们完成了 `AddPolygonTool` 的编写。
+
+接下来我们回到主程序窗体。为方便起见，这里我们创建一个“内存图层”用于编辑。内存图层是指不来源于任何外部数据。直接创建于内存之中的图层。在 QGIS 中通过 New Scratch Layer (草稿图层) 创建的图层就是内存图层。
+
+内存图层的创建非常简单，在 URL 中通过正确的语法描述几何数据类型、坐标系、字段信息即可。具体可参考 `QgsVectorLayer` 的[开发文档](https://qgis.org/api/classQgsVectorLayer.html#details)，写得十分详细。
+
+主窗体代码头文件如下：
+
+```clike
+// AddFeatureDemo.h
+
+class AddFeatureDemo : public QWidget
+{
+
+public:
+
+	AddFeatureDemo(QWidget * parent = 0);
+
+private:
+
+	Ui::AddFeatureDemo ui;
+
+	QgsMapCanvas mCanvas;                        // 画布
+	QgsVectorLayer* mpStratchLayer = nullptr;    // 内存图层
+	AddPolygonTool* mpToolAddPolygon = nullptr;  // “添加多边形”地图工具
+
+	void onStartEditingButtonToggled(bool isChecked);
+	void onDrawPolygonButtonToggled(bool isChecked);
+
+};
+```
+
+主窗体的构造函数：
+
+```clike
+// AddFeatureDemo.cpp
+
+AddFeatureDemo::AddFeatureDemo(QWidget * parent) :
+	QWidget(parent),
+	mCanvas(this)
+{
+	ui.setupUi(this);
+	ui.lytMain->addWidget(&mCanvas);
+```
+
+在内存中创建一个多边形图层，使用坐标系 EPSG:4326 (WGS 84)。第三个参数填写 `"memory"` 表示内存图层。
+
+```clike
+	mpStratchLayer = new QgsVectorLayer("polygon?crs=epsg:4326", u8"临时面图层", "memory");
+	mCanvas.setLayers(QList<QgsMapLayer*>() << mpStratchLayer);
+```
+
+将临时图层添加到画布，并将画布缩放到 WGS 84 坐标系的边界范围。否则画布的初始范围与坐标系范围不符，会导致绘制出现问题。
+
+```clike
+	mCanvas.setCurrentLayer(mpStratchLayer);
+	mCanvas.setExtent(QgsCoordinateReferenceSystem("EPSG:4326").bounds());
+```
+
+创建我们的“绘制多边形”地图工具：
+
+```clike
+	mpToolAddPolygon = new AddPolygonTool(&mCanvas);
+```
+
+绑定“开始编辑”按钮和“绘制多边形”按钮点击事件：
+
+```clike
+	QObject::connect(ui.btnStartEditing, &QPushButton::toggled, this, &AddFeatureDemo::onStartEditingButtonToggled);
+	QObject::connect(ui.btnDrawPolygon, &QPushButton::toggled, this, &AddFeatureDemo::onDrawPolygonButtonToggled);
+}
+```
+
+运行程序。先点击“开始编辑”，再点击“绘制多边形”，然后在画布上点击就能绘制多边形了。点击右键结束当前多边形的绘制，绘制完成的多边形会自动变成临时图层的要素。注意我们并没有实现图层保存的功能，因此你退出程序之后图层就从内存里释放了。不过到此为止我们已经完成了添加文章一开始提出的需求。恭喜！

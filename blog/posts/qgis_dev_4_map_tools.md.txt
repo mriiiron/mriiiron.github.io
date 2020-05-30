@@ -1,0 +1,11 @@
+```
+title:      QGIS 二次开发 4：地图工具
+author:     mriiiron
+date:       2020-05-27
+category:   技术
+tags:       QGIS
+```
+
+地图工具是输入设备（一般指鼠标与键盘）与画布的交互接口。一张画布（即一个 `QgsMapCanvas` 实例）在同一时刻仅允许一个地图工具处于“激活”状态。
+
+*未完待续*

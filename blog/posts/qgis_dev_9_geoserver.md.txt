@@ -1,0 +1,83 @@
+```
+title:      QGIS 二次开发 9：GeoServer 简介
+author:     mriiiron
+date:       2020-06-02
+category:   技术
+tags:       QGIS
+```
+
+本文介绍 GeoServer 的部署及使用。
+
+GeoServer 是开源 GIS Web 服务器规范的一种 Java 的实现。GeoServer 部署在服务器上，可以方便的将基于文件或数据库的 GIS 数据发布为各种符合 OGC 规范的 Web 服务。通过开放 API 允许用户对特征数据进行查询、更新、删除、插入等操作，支持在线符号化。前面我们通过天地图 API 加载的图层就是一种 Web 服务，其数据由天地图官方收集并提供。现在借助 GeoServer 我们可以把我们自己的数据转化为服务。更多信息请参阅[GeoServer 官网](http://geoserver.org)。
+
+虽然 GeoServer 基于 Java 实现，但我们无需关心 GeoServer 内部实现，只需要像安装普通软件一样将其部署到服务器上即可。GeoServer 支持 Windows 和 Linux 平台。这里还是介绍 CentOS Linux 平台下的安装。官网安装指南[在此](https://docs.geoserver.org/stable/en/user/installation/linux.html)。
+
+{{ AbstractBreaker }}
+
+GeoServer 需要 Java 运行时 (JRE) 支持。我们可以用 OpenJDK。根据官网说明，我们需要安装 Java 8 或 Java 11。这里以 8 为例。根据[OpenJDK 安装说明](http://openjdk.java.net/install/)，简单执行：
+
+```bash
+$ yum install java-1.8.0-openjdk
+```
+
+即可成功安装所需的 Java 运行环境。
+
+接下来，下载 GeoServer 压缩包并上传到服务器。推荐下载最新 Stable 版本。截至目前最新稳定版是 2.17.0。官方文档推荐的安装目录是 `/usr/share/geoserver`。我们创建这个目录：
+
+```bash
+$ mkdir /usr/share/geoserver
+```
+
+上传后，解压，再删除压缩包：
+
+```bash
+$ unzip geoserver-2.17.0-bin.zip
+$ rm -f geoserver-2.17.0-bin.zip
+```
+
+即完成 GeoServer 的安装。
+
+> 为保证执行权限，需要用 `chown` 命令将 geoserver 的安装目录设置为当前用户所有。若是以 root 用户操作则可跳过此步骤。
+
+然后我们就可用命令，通过调用 GeoServer 提供的启动脚本来启动 GeoServer：
+
+```bash
+$ sh /usr/share/geoserver/bin/startup.sh
+```
+
+> 注：上述命令将使得 GeoServer 运行于前台。如需 GeoServer 后台运行，可借助 `nohup` 命令。
+
+这样 GeoServer 就会开始启动自检。等待一段时间后，终端提示：
+
+```
+2020-05-29 17:52:43.581:INFO:oejs.Server:main: Started @27691ms
+```
+
+表示启动成功。此时即可尝试访问后台：
+
+```
+http://localhost:8080/geoserver
+```
+
+如果安装部署在远程服务器（如虚拟机），把 `localhost` 换成远程服务器地址即可：
+
+```
+http://10.0.0.3:8080/geoserver
+```
+
+注：如遇到无法访问的情况，可检查防火墙是否开放 8080 端口。使用 `firewall-cmd` 打开 8080 端口：
+
+```bash
+$ firewall-cmd --add-port=8080/tcp --permanent --zone=public
+```
+
+刷新防火墙之后，检查端口是否开放：
+
+```bash
+$ firewall-cmd --reload
+$ firewall-cmd --list-ports
+```
+
+如可以成功进入 GeoServer 后台，输入默认用户名 `admin` 和默认密码 `geoserver` 即可进入系统。
+
+*未完待续*

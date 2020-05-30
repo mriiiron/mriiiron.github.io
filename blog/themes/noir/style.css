@@ -9,15 +9,16 @@
 }
 
 
-/* Color Palette: http://paletton.com/#uid=14w0u0k6qHZ0NYI35RWaHwbg1qK */
 :root {
-    --c-darker: #232322;
-    --c-dark: #5b5b5b;
+    --c-darker: #1f2124;
+    --c-dark: #383a3f;
     --c-medium: #878787;
-    --c-light: #b0b0b0;
+    --c-light: #b0b1b2;
     --c-lighter: #dfe0df;
-    --c-main: #127eb2;
-    --c-main-light: #59a5ca;
+    --c-main-dark: #cf5a28;
+    --c-main: #f68657;
+    --c-main-light: #f6b352;
+    --c-main-lighter: #faeee0;
     --c-text: #555;
     --c-text-light: #aaa;
 }
@@ -37,11 +38,11 @@ body {
 
 a {
     text-decoration: none;
-    color: var(--c-main);
+    color: var(--c-main-dark);
 }
 
 a:hover {
-    color: var(--c-main-light);
+    color: var(--c-main);
 }
 
 .salvia-header {
@@ -164,7 +165,7 @@ a:hover {
 }
 
 .salvia-post code {
-    background-color: #eee;
+    background-color: var(--c-main-lighter);;
     padding: 2px 4px;
 }
 

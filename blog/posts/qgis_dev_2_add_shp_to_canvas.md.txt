@@ -10,7 +10,7 @@ tags:       QGIS
 
 看似简单的需求，加起来就十几行代码，其实已经覆盖了 QGIS 二次开发中不少重要的内容。对于初学者，我尽可能保证大家每一课都能有所收获，且不至于一次性摄入太多东西导致消化不良。何况一次讲太多，我写文章和整理文章也不容易嘛。
 
-数据我们选用最常见的 ESRI Shapefile 格式，这应该是学习 GIS 的小伙伴尤其是 ArcGIS 入门的小伙伴最熟悉的矢量格式了。如第一篇[「QGIS 二次开发：简介」](./post.html?postKey=qgis_dev_intro)中我已经提到的，Shapefile 为 OGR 所支持的最重要的数据格式之一，自然可以被 QGIS 加载。
+数据我们选用最常见的 ESRI Shapefile 格式，这应该是学习 GIS 的小伙伴尤其是 ArcGIS 入门的小伙伴最熟悉的矢量格式了。如第一篇[「QGIS 二次开发 0：简介」](./post.html?postKey=qgis_1_dev_intro)中我已经提到的，Shapefile 为 OGR 所支持的最重要的数据格式之一，自然可以被 QGIS 加载。
 
 我们先来看一看完整代码，然后我再逐行讲解。
 

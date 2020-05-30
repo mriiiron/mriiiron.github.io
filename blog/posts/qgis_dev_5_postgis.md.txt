@@ -1,0 +1,344 @@
+```
+title:      QGIS 二次开发 5：使用 PostGIS
+author:     mriiiron
+date:       2020-05-29
+category:   技术
+tags:       QGIS
+```
+
+先前的文章我们讲到，QGIS 是天生支持开源地理空间数据库 PostGIS 的。可以自如的使用 PostGIS 是 QGIS 相对于 ArcGIS 的一大优势。PostGIS 是开源关系型数据库 PostgreSQL 的空间数据库扩展。在 PostgreSQL 的基础上加入了空间数据类型和空间处理函数等支持，是现今应用最广的开源 GIS 数据库之一。
+
+
+## 1. PostGIS 的安装与部署
+
+在 Linux 环境下部署 PostGIS 比较简单。和 Linux 下安装其他软件的方法一样，有源码编译安装及软件包安装两种方式。源码编译即下载源码压缩包，软件包安装则是借助对应 Linux 发行版的包管理器进行安装。无论采用何种方法，均需**先安装 PostgreSQL 再安装 PostGIS 插件**。这里以 CentOS 7 环境为例。
+
+> 注：本文的目的并非详细讲述，仅仅作简单的介绍。具体安装步骤请参考 PostgreSQL 和 PostGIS 官方文档。
+
+安装前可先查看 OSGeo 的 [PostGIS 支持矩阵](https://trac.osgeo.org/postgis/wiki/UsersWikiPostgreSQLPostGIS)。这个页面用表格的形式描述了合适的 PostgreSQL 和 PostGIS 版本组合，非常具有参考价值。截至目前 PostgreSQL 的最新版为 PostgreSQL 13，这个版本尚不稳定，建议用 PostgreSQL 12。与此对应，建议用 PostGIS 2.5 或 PostGIS 3.0 版本均可。
+
+{{ AbstractBreaker }}
+
+### Linux 下安装
+
+先安装 PostgreSQL，比较简单直白。先进入官方文档找到 [Red Hat family Linux 平台的安装指引页](https://www.postgresql.org/download/linux/redhat/)，选择需要安装的 PostgreSQL 版本 (12)，再选择平台版本 (CentOS 7) 和架构 (32 或 64 位)，网页上便会自动生成使用 yum 安装 PostgreSQL 12 的命令。例如：
+
+```bash
+$ yum install https://download.postgresql.org/pub/repos/yum/reporpms/EL-7-x86_64/pgdg-redhat-repo-latest.noarch.rpm
+$ yum install postgresql12
+```
+
+再安装 PostGIS，这会稍微麻烦一点。根据[PostGIS 官方提供的安装文档](https://postgis.net/install/)指引，先前往 [PostgreSQL yum repository](https://yum.postgresql.org/) 下载符合自己平台版本的 RPM 包，再用 yum 安装所需的 PostGIS 版本即可。如：
+
+```bash
+$ yum install postgis25_96
+```
+
+表示安装 PostGIS 2.5 版本，96 为小版本号。你可以借助 `yum list` 查看 RPM 包里可供安装的 postgis 版本：
+
+```bash
+$ yum list postgis*
+```
+
+### Windows 下安装
+
+在 Windows 下安装的过程相对比较简单。先下载 PostgreSQL 的 Windows 安装包，安装 PostgreSQL 后再用其自带的 StackBuilder 工具安装 PostGIS 扩展即可。可以参考这篇[官网提供的教程](http://www.bostongis.com/PrinterFriendly.aspx?content_name=postgis_tut01)，这里不再赘述。
+
+> 始终建议在 Linux 环境下学习安装部署 PostGIS。这更接近实际生产条件。除 SQL Server 之外很少会考虑在 Windows 服务器环境下部署数据库服务器。本机部署可将 PostGIS 部署于 Linux 虚拟机，使用时，本机远程连接到虚拟机上部署的数据库。
+
+### 激活 PostGIS
+
+在 PostgreSQL 中创建数据库时，默认不包含 PostGIS 扩展。如果你想在某 PostgreSQL 创建的数据库中使用 PostGIS，必须手动激活 PostGIS 扩展。你可以用 psql 之类的工具登录数据库服务器，执行如下命令：
+
+```sql
+# 创建数据库
+CREATE DATABASE gisdb;
+
+# 激活 PostGIS 扩展和 PostGIS Topology 扩展
+CREATE EXTENSION postgis;
+CREATE EXTENSION postgis_topology;
+```
+
+> 注：PostGIS 还有很多其他扩展可供选择性引入。参见[此页面](https://postgis.net/install/)
+
+
+## 2. 向 PostGIS 导入空间数据
+
+现在我们已经部署了 PostGIS，可以向内导入数据了。以导入 Shapefile 为例，导入数据有多种方式，可以借助 GDAL 命令行工具 ogr2ogr，可以用 shp2pgsql 工具，当然最直观的也可以直接用 QGIS 软件导入。步骤如下：
+
+1. 在 Browser (资源浏览器) 面板中，找到 PostGIS，右键点击选择 New Connection (新建连接)；
+2. 弹出的对话框中输入数据库的连接参数。确保数据库处于运行状态。可以使用 Test Connection (测试连接) 按钮测试数据库连接；
+3. 连接成功后，回到主菜单栏点击 Database (数据库)，选择 Database Manager (数据库管理器)；
+4. 在 DB Manager 界面中，展开 PostGIS 节点，双击刚建立好的连接激活之，然后从点击工具栏里 Import Layer/File (导入图层/文件)，按提示操作即可；
+5. 导入完成后，关闭 DB Manager 界面，在 Browser 面板依次展开 PostGIS 节点和数据库，双击表名即可在 QGIS 中加载图层。
+
+现在假设我们已经完成了数据的导入，我们已有一个活动的 PostGIS 数据库以及几张导入的数据表。现在我们尝试用代码从 PostGIS 中加载图层到画布。
+
+
+## 3. 从 PostGIS 加载图层
+
+> 以下只列出核心代码。其余软件框架、界面等代码与前面的文章类似，不再赘述。
+
+从 PostGIS 加载图层的步骤和从文件系统加载图层步骤如下。首先我们在程序中建立到 PostGIS 数据库的连接：
+
+```clike
+QSqlDatabase db = QSqlDatabase::addDatabase("QPSQL");
+if (!db.isValid())
+{
+    QMessageBox::critical(this, u8"错误", u8"不支持指定的数据库类型。");
+    return;
+}
+db.setHostName("10.0.0.3");   // 主机名
+db.setDatabaseName("gisdb");  // 数据库名
+db.setPort(5432);             // 端口号 (PostgreSQL 默认 5432)
+db.setUserName("postgres");   // 用户名
+db.setPassword("abcd1234");   // 密码
+db.setConnectOptions("connect_timeout=3");  // 连接选项，这里设定连接超时时间为 3 秒
+db.open();
+if (!db.isOpen())
+{
+    QMessageBox::critical(this, u8"错误", u8"打开数据库失败。");
+    return;
+}
+```
+
+借助 `QSqlDatabase` 接口，创建一个数据库连接对象 `db`。调用 `addDatabase()` 方法时，传递字符串 `QPSQL` 表示 PostgreSQL。这需要 Qt 数据库插件 `qsqlpsql.dll` 的支持。参见之前的文章[「QGIS 二次开发 1：基于 VS 的环境搭建」](./post.html?postKey=qgis_dev_1_env_setup)。创建后调用 `isValid()` 方法判断是否创建成功。
+
+随后设置数据库连接的参数，调用 `open()` 打开数据库连接并用 `isOpen()` 判断连接是否打开成功。
+
+```clike
+QgsDataSourceUri uri;
+uri.setConnection(db.hostName(), QString::number(db.port()), db.databaseName(), db.userName(), db.password());
+uri.setDataSource("public", "gadm36_chn_3", "geom");
+```
+
+接下来我们创建指向图层（即数据库中某张数据库表）的 URI。利用 `QgsDataSourceUri` 接口，调用 `setConnection()`，将之前建立的数据库参数传递过去，再调用 `setDataSource()` 通过三个参数分别设置 schema 名、表名、空间字段名（空间字段名在导入图层到 PostGIS 的时候可以指定，一般为 `geom`）。一个存储空间数的表必定有一个空间字段。
+
+然后我们可以像之前一样，建立 `QgsVectorLayer` 实例。此时，第一个参数使用刚刚建立的 `QgsDataSourceUri` 对象，调用其 `uri()` 方法返回一个 `QString` 类型的可被 `QgsVectorLayer` 构造函数第一个参数所接受的字符串格式。第三个参数则填写 `"postgres"`，表示从 PostGIS 读取数据。代码如下：
+
+```clike
+QgsVectorLayer* pVectorLayer = new QgsVectorLayer(uri.uri(), u8"县级行政区", "postgres");
+if (!pVectorLayer->isValid()) {
+    QMessageBox::critical(this, u8"错误", QString(u8"图层加载失败：%1").arg(pVectorLayer->error().message(QgsErrorMessage::Format::Text)));
+    return;
+}
+```
+
+创建 `QgsVectorLayer` 后，可以关闭数据库连接。
+
+```clike
+db.close();
+```
+
+最后，照常将图层添加到画布即可。
+
+```clike
+mCanvas.setLayers(QList<QgsMapLayer*>() << pVectorLayer);
+mCanvas.zoomToFullExtent();
+```
+
+
+## 4. 空间查询和空间分析
+
+现在我们已经完成了将 PostGIS 数据表加载到画布的过程，运行程序可以看到画布上显示载入的县级行政区数据表图层 `gadm36_chn_3`，字段 `name_1` 记录省级行政区名。现在让我们再进一步，尝试执行一些空间查询和分析。
+
+### 统计统计中国各省县级行政区的数量
+
+用户点击按钮执行 SQL 并把结果以表格形式显示。以下述 SQL 为例：
+
+```sql
+SELECT "name_1" AS "province_name", COUNT(0) AS "county_count" FROM "gadm36_chn_3" GROUP BY "name_1"
+```
+
+下面我们借助 `QSqlQueryModel` 和 `QTableView` 两个接口，实现 SQL 的执行和 SQL 语句的显示。前者负责用一个 `SELECT` 查询语句的结果负责 Model 的数据供应，供前端 View 直接显示，避免了手动将查询结果填入表格的麻烦。首先通过 SQL 语句建立 `QSqlQueryModel` 并顺道设定表头显示：
+
+```clike
+QSqlQueryModel* pModel = new QSqlQueryModel;
+pModel->setQuery("SELECT \"name_1\" AS \"province_name\", COUNT(0) AS \"county_count\" FROM \"gadm36_chn_3\" GROUP BY \"name_1\"", QSqlDatabase::database());
+pModel->setHeaderData(0, Qt::Horizontal, u8"省级行政区名");
+pModel->setHeaderData(1, Qt::Horizontal, u8"县级行政区数目");
+```
+
+`QSqlDatabase::database()` 会打开前面通过 `QSqlDatabase::addDatabase()` 建立到的数据库连接。`addDatabase()` 执行时可传入一个额外的“连接名”参数，唯一标定一个数据库连接。如果省略此参数则表示默认链接。本例中，前面建立的数据库连接即为默认连接。更多信息还是请参阅 [Qt 官方文档](https://doc.qt.io/qt-5/qsqldatabase.html)。
+
+接下来将 `QSqlQueryModel` 的数据绑定到 `QTableView`，并作为弹出窗口显示：
+
+```clike
+QTableView* pView = new QTableView(this);
+pView->setModel(pModel);
+pView->setWindowModality(Qt::WindowModality::WindowModal);
+pView->setWindowFlag(Qt::Window);
+pView->setWindowTitle(u8"测试统计结果");
+pView->show();
+```
+
+上述两段代码绑定到按钮的点击事件执行即可。点击此按钮，便会弹出 `QTableView` 表格形式显示的统计结果。
+
+### 绘制矩形裁切县级行政区图层生成裁切结果
+
+用户手动在画布上绘制一个矩形区域，点击按钮则根据绘制的矩形作为裁切要素对县级行政区域图层作裁切，生成裁切结果图层作为新的数据表保存。这里我们分为两个部分来讲：绘制矩形、执行裁切。
+
+#### a. 绘制矩形
+
+这里我们借助一个新的地图工具 `QgsMapToolExtent` 完成绘制绘制的工作。本工具与[「QGIS 二次开发 4：地图工具」](./post.html?postKey=qgis_dev_4_map_tools)中介绍的 `QgsMapToolEmitPoint` 类似，`QgsMapToolEmitPoint` 通过用户的一次鼠标点击在地图上生成一个点，`QgsMapToolExtent` 则通过一次拖动框选生成一个矩形。
+
+然后我们在界面上创建一个按钮，设定其属性 `isCheckable` 为 `true` (可以通过 Qt Designer 完成)。这样用户点击此按钮，按钮会被按下（激活状态），再点击一次则会弹起。我们希望达到用户按下此按钮时激活矩形绘制，即设定画布的地图工具为 `QgsMapToolExtent`，弹起此按钮时则取消激活矩形绘制的效果。我们将按钮的 `toggled` 信号绑定到槽上：
+
+```clike
+QObject::connect(ui.btnDrawRect, &QPushButton::toggled, this, &PostgisDemo::onDrawPolygonButtonClicked);
+```
+
+> 注：`isCheckable` 属性和 `toggled` 信号均属于 `QPushButton` 父类 `QAbstractButton`。
+
+然后完成槽函数实现：
+
+```clike
+void PostgisDemo::onDrawPolygonButtonClicked(bool isChecked)
+{
+    if (isChecked)
+    {
+        mCanvas.setMapTool(&mToolDrawRect);
+    }
+    else
+    {
+        mCanvas.unsetMapTool(&mToolDrawRect);
+    }
+}
+```
+
+`toggled` 信号传递一个布尔型参数 `isChecked`，表示按钮被**点击后**处于按下状态还是弹起状态。我们设定，如果是按下状态则设置地图工具为 `mToolDrawRect` (事先创建的 `QgsMapToolExtent`)，否则取消设置地图工具。这样用户只需要激活此按钮就可以在画布上绘制矩形了。
+
+#### b. 执行裁切
+
+我们再添加一个按钮，绑定其 `clicked` 信号到如下槽:
+
+```clike
+void PostgisDemo::onRunClipButtonClicked()
+{
+```
+
+首先判断是否已经绘制矩形。这可以通过调用 `QgsMapToolExtent::extent()` 方法来获取。这个函数返回一个 `QgsRectangle` 类型，可以通过 `isEmpty()` 判定是否为空。如为空则表示用户尚未通过地图工具绘制矩形。
+
+```clike
+    if (mToolDrawRect.extent().isEmpty())
+    {
+        QMessageBox::warning(this, u8"提示", QString(u8"请先绘制裁切矩形。"));
+        return;
+    }
+```
+
+接下来连接到数据库。与自动化的 `QSqlQueryModel` 不同，这里我们通过查询对象 `QSqlQuery` 来手动执行查询。
+
+```clike
+    QSqlDatabase db = QSqlDatabase::database();
+    if (!db.isOpen())
+    {
+        QMessageBox::critical(this, u8"错误", QString(u8"无法连接到数据库：\n%1").arg(db.lastError().text()));
+        return;
+    }
+    QSqlQuery query(db);
+```
+
+由于涉及到多个 SQL 连续执行，这里我们利用 PostgreSQL 的事务 (transaction) 机制。大多数关系型数据库都支持事务机制。通过 `QSqlDatabase` 的 `transaction()` 方法可以启动一个事务。启动事务后可任意执行 SQL，若中途遇到问题，可以通过 `rollback()` 回滚。执行完毕后，通过 `commit()` 提交事务。
+
+> 注：上述三个函数都返回布尔值，若返回 `false` 表示执行失败（如数据库系统不支持事务）。本文代码为简单起见，未作此判断。
+
+```clike
+    db.transaction();
+```
+
+设定裁切的结果表名为 `clip_result`。如果结果表已经存在，先执行 `DROP` 语句删除之。
+
+```clike
+    QString resultTableName = "clip_result";
+    QString sql = QString("DROP TABLE IF EXISTS \"%1\"").arg(resultTableName);
+    if (!query.exec(sql))
+    {
+        QMessageBox::critical(this, u8"错误", QString(u8"SQL 错误：\n%1\n\n完整 SQL：\n%2").arg(query.lastError().text(), sql));
+        db.rollback();
+        return;
+    }
+```
+
+注意这里的代码：我们先用一个 `QString` 存储要执行的 SQL，再调用 `QSqlQuery` 的 `exec()` 方法传入 SQL 语句并执行。若返回 `false` 表示执行失败，此时可以报错并 `rollback()`。
+
+> `QSqlQuery` 还有多种用法，如用 `prepare()` 创建参数化的，安全的 SQL 查询。具体请参阅 [Qt 官方文档](https://doc.qt.io/qt-5/qsqldatabase.html)。
+
+然后我们执行 `CREATE TABLE` 语句创建结果表，这里为其设置一个自增的 id 字段。篇幅所限，这里不详细说明 PostgreSQL 语法。
+
+```clike
+    sql = QString("CREATE TABLE \"%1\" (\"id\" SERIAL PRIMARY KEY)").arg(resultTableName);
+    if (!query.exec(sql))
+    {
+        QMessageBox::critical(this, u8"错误", QString(u8"SQL 错误：\n%1\n\n完整 SQL：\n%2").arg(query.lastError().text(), sql));
+        db.rollback();
+        return;
+    }
+```
+
+接下来执行很重要的一步，通过查询 `geometry_columns` 系统视图，获取被裁切图层的坐标系 SRID (Spatial Reference ID) 和空间字段名 (通常为 `geom`)，存入三个 `QString` 变量中。
+
+> 只有在安装了 PostGIS 扩展的 PostgreSQL 数据库中才存在 `geometry_columns` 视图。
+
+```clike
+    sql = QString("SELECT \"srid\", \"f_geometry_column\", \"type\" FROM \"geometry_columns\" WHERE \"f_table_name\" = 'gadm36_chn_3'");
+    if (!query.exec(sql))
+    {
+        QMessageBox::critical(this, u8"错误", QString(u8"SQL 错误：\n%1\n\n完整 SQL：\n%2").arg(query.lastError().text(), sql));
+        db.rollback();
+        return;
+    }
+    query.first();
+    QString srid = query.value(0).toString();
+    QString geomColumnName = query.value(1).toString();
+    QString geomType = query.value(2).toString();
+```
+
+然后，我们执行 PostGIS 的 `AddGeometryColumn` 函数，为结果表添加空间数据字段 `"geom"`。如有必要，该空间字段名可自定义。
+
+```clike
+    // 第五个参数 2，表示目标空间字段为二维
+    sql = QString("SELECT AddGeometryColumn('%1', 'geom', %2, '%3', 2)").arg(resultTableName, srid, geomType);
+    if (!query.exec(sql))
+    {
+        QMessageBox::critical(this, u8"错误", QString(u8"SQL 错误：\n%1\n\n完整 SQL：\n%2").arg(query.lastError().text(), sql));
+        db.rollback();
+        return;
+    }
+```
+
+> 执行了 `AddGeometryColumn()` 函数之后，相应的表条目会出现在 `geometry_column` 视图之中，表示此表已成为存放空间数据的表。参看 [PostGIS 文档](https://postgis.net/docs/AddGeometryColumn.html)。
+
+下面执行裁切 SQL。此处调用了多个 PostGIS 函数。篇幅所限，这里也不展开解释了。
+
+```clike
+    sql = QString(
+        "INSERT INTO \"%1\" (\"geom\") "
+        "WITH \"cte\" AS ( "
+            "SELECT ST_GeomFromText('%2', %3) AS \"clipper\" "
+        ") "
+        "SELECT "
+            "CASE "
+                "WHEN ST_Covers(\"cte\".\"clipper\", \"t\".\"geom\") THEN ST_Multi(\"t\".\"geom\") "
+                "ELSE ST_Multi(ST_Intersection(\"cte\".\"clipper\", \"t\".\"geom\")) "
+            "END AS \"geom\" "
+        "FROM "
+            "\"gadm36_chn_3\" AS \"t\" INNER JOIN \"cte\" ON ST_Intersects(\"cte\".\"clipper\", \"t\".\"geom\") "
+    ).arg(resultTableName, mToolDrawRect.extent().asWktPolygon(), srid);
+    if (!query.exec(sql))
+    {
+        QMessageBox::critical(this, u8"错误", QString(u8"SQL 错误：\n%1\n\n完整 SQL：\n%2").arg(query.lastError().text(), sql));
+        db.rollback();
+        return;
+    }
+```
+
+上述 SQL 执行后，数据库内会生成一张新表 `clip_result`。最后我们提交事务，完成操作。
+
+```clike
+    db.commit();
+    QMessageBox::information(this, u8"消息", u8"裁切执行成功。清用 QGIS 打开数据查看结果。");
+}
+```
+
+用 QGIS 连接到数据库，可以查看新生成的表 `clip_result`，载入为图层，即可查看裁切结果。恭喜！

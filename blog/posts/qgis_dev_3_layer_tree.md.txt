@@ -71,7 +71,7 @@ LayerTreeDemo::LayerTreeDemo(QWidget * parent) :
 
 我们通过单例 `QgsProject` 的唯一实例，调用其 `layerTreeRoot()` 方法，获取了图层树的根节点 `QgsLayerTree*`。
 
-`QgsProject` 是最重要的 QGIS 开发接口之一。它封装了当前 QGIS “工程”的信息。在 QGIS 软件中我们可以新建/保存/打开工程（可以输出为 .qgs 文件，类似于 ArcGIS 的 .mxd 地图文档文件），即指的是 `QgsProject` 实例。一个 QGIS 应用程序在同一时刻只能有一个 `QgsProject` 实例。`QgsProject` 其中最重要的作用就是记录当前工程的图层树结构，想象你打开一个 QGIS 工程的时候，图层树将会按照其保存时的样子原封不动的载入。因此我们可以通过 `QgsProject` 的单例，获取当前工程的图层树根节点。
+`QgsProject` 是最重要的 QGIS 开发接口之一。它封装了当前 QGIS “工程”的信息。在 QGIS 软件中我们可以新建/保存/打开工程（可以输出为 .qgz 文件，类似于 ArcGIS 的 .mxd 地图文档文件），即指的是 `QgsProject` 实例。一个 QGIS 应用程序在同一时刻只能有一个 `QgsProject` 实例。`QgsProject` 其中最重要的作用就是记录当前工程的图层树结构，想象你打开一个 QGIS 工程的时候，图层树将会按照其保存时的样子原封不动的载入。因此我们可以通过 `QgsProject` 的单例，获取当前工程的图层树根节点。
 
 随后我们将图层树的图层隐藏/显示点击“事件”，绑定到我们自己定义的“回调”上：
 
